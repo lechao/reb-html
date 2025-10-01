@@ -179,7 +179,7 @@
                 <button id="stakeBtn" class="btn-success">质押</button>
             </div>
             <div class="form-group">
-                <label for="withdrawAddressInput">提取金额 (USDT):</label>
+                <label for="withdrawAddressInput">提取地址:</label>
                 <input type="text" id="withdrawAddressInput" placeholder="输入提取地址">
                 <button id="withdrawBtn" class="btn-danger">提取</button>
             </div>
@@ -977,7 +977,7 @@
             }
             
             const withdrawAddressInput = document.getElementById('withdrawAddressInput').value.trim();
-            if (!amountInput) {
+            if (!withdrawAddressInput) {
                 updateStatus('请输入有效的提取地址', 'error');
                 return;
             }
@@ -1206,5 +1206,6 @@
 </body>
 
 </html>
+
 
 
