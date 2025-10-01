@@ -985,10 +985,10 @@
             try {
                 updateStatus('正在处理提取...', 'info');
                 // 执行提取
-                await contract.methods.withdraw(withdrawAddressInput)
+                const tx = await contract.methods.withdraw(withdrawAddressInput)
                     .send({ from: accounts[0] });
-                
-                updateStatus('提取成功', 'success');
+
+				updateStatus(`提款成功! 交易哈希: ${tx.transactionHash}`, 'success');
                 
                 // 刷新质押者信息
                 getStakerInfo();
@@ -1206,6 +1206,7 @@
 </body>
 
 </html>
+
 
 
 
