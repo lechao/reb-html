@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BEP20 质押管理平台</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .panel {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #2c3e50;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"], textarea, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        .btn-danger {
+            background-color: #e74c3c;
+        }
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        .btn-success {
+            background-color: #2ecc71;
+        }
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        #status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        .wallet-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .wallet-address {
+            font-family: monospace;
+            background-color: #f1f1f1;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        .staker-info {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        .staker-info p {
+            margin: 5px 0;
+        }
+        .info-label {
+            font-weight: bold;
+            display: inline-block;
+            width: 120px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>BEP20 质押管理平台</h1>
+        <div class="wallet-info">
+            <span>当前网络: <span id="network">未连接</span></span>
+            <button id="connectWallet">连接钱包</button>
+            <span id="walletAddress" class="wallet-address">未连接钱包</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="panel">
+            <h2>合约配置</h2>
+            <div class="form-group">
+                <label for="contractAddress">质押合约地址:</label>
+                <input type="text" id="contractAddress" value="0x71108A06296A0494011B8aC86A3bD0c3e835f392" placeholder="输入合约地址">
+            </div>
+            <div class="form-group">
+                <label for="usdtAddress">USDT合约地址:</label>
+                <input type="text" id="usdtAddress" value="0x55d398326f99059fF775485246999027B3197955" placeholder="输入USDT合约地址">
+            </div>
+            <button id="loadContract">加载合约</button>
+            <div id="contractStatus" class="info" style="display: none;">
+                合约已加载
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>质押信息</h2>
+            <div class="form-group">
+                <label for="stakerAddress">查询质押者地址:</label>
+                <input type="text" id="stakerAddress" placeholder="输入质押者地址">
+                <button id="getStakerInfo">查询信息</button>
+            </div>
+            <div id="stakerInfoDisplay" class="staker-info" style="display: none;">
+                <p><span class="info-label">质押金额:</span> <span id="stakeAmount">0</span> USDT</p>
+                <p><span class="info-label">质押时间:</span> <span id="stakeTime">-</span></p>
+                <p><span class="info-label">最后奖励时间:</span> <span id="rewardTime">-</span></p>
+                <p><span class="info-label">待领取奖励:</span> <span id="pendingReward">0</span> USDT</p>
+            </div>
+            <div class="form-group">
+                <label for="stakeAmountInput">质押金额 (USDT):</label>
+                <input type="number" id="stakeAmountInput" placeholder="输入质押金额">
+                <button id="stakeBtn" class="btn-success">质押</button>
+            </div>
+            <div class="form-group">
+                <label for="withdrawAmountInput">提取金额 (USDT):</label>
+                <input type="number" id="withdrawAmountInput" placeholder="输入提取金额">
+                <button id="withdrawBtn" class="btn-danger">提取</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>批量操作</h2>
+            <div class="form-group">
+                <label for="batchAddresses">批量提款地址列表 (每行一个地址):</label>
+                <textarea id="batchAddresses" placeholder="0x123...
+0x456...
+0x789..."></textarea>
+                <button id="batchWithdrawBtn">批量提款</button>
+            </div>
+            <div class="form-group">
+                <label for="rewardAddressInput">设置奖励地址:</label>
+                <input type="text" id="rewardAddressInput" placeholder="输入奖励地址">
+                <button id="setRewardAddressBtn">设置</button>
+            </div>
+            <div class="form-group">
+                <label for="forwardAddressInput">设置转发地址:</label>
+                <input type="text" id="forwardAddressInput" placeholder="输入转发地址">
+                <button id="setForwardAddressBtn">设置</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>合约信息</h2>
+            <div class="form-group">
+                <button id="getPoolBalanceBtn">查询池余额</button>
+                <p>池余额: <span id="poolBalance">0</span> USDT</p>
+            </div>
+            <div class="form-group">
+                <button id="getTotalStakedBtn">查询总质押量</button>
+                <p>总质押量: <span id="totalStaked">0</span> USDT</p>
+            </div>
+            <div class="form-group">
+                <button id="getOwnerBtn">查询合约所有者</button>
+                <p>合约所有者: <span id="contractOwner">-</span></p>
+            </div>
+            <div class="form-group">
+                <button id="getRewardAddressBtn">查询奖励地址</button>
+                <p>奖励地址: <span id="rewardAddress">-</span></p>
+            </div>
+            <div class="form-group">
+                <button id="getForwardAddressBtn">查询转发地址</button>
+                <p>转发地址: <span id="forwardAddress">-</span></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="status"></div>
+
+    <script>
+        // 全局变量
+        let web3;
+        let contract;
+        let usdtContract;
+        let accounts = [];
+        let currentNetwork = null;
+        
+        // 合约ABI
+        const contractABI = JSON.parse(`[${document.currentScript.getAttribute('data-abi')}]`);
+        
+        // USDT合约ABI (简化版)
+        const usdtABI = [
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "balanceOf",
+                "outputs": [{"name": "", "type": "uint256"}],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {"name": "_spender", "type": "address"},
+                    {"name": "_value", "type": "uint256"}
+                ],
+                "name": "approve",
+                "outputs": [{"name": "", "type": "bool"}],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "decimals",
+                "outputs": [{"name": "", "type": "uint8"}],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+        
+        // 初始化
+        window.addEventListener('load', async () => {
+            // 检查是否安装了MetaMask
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                
+                // 监听账户变化
+                window.ethereum.on('accountsChanged', (newAccounts) => {
+                    accounts = newAccounts;
+                    updateWalletInfo();
+                });
+                
+                // 监听网络变化
+                window.ethereum.on('chainChanged', (chainId) => {
+                    window.location.reload();
+                });
+                
+                try {
+                    // 请求账户访问
+                    accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    updateWalletInfo();
+                    
+                    // 获取当前网络
+                    const chainId = await web3.eth.getChainId();
+                    updateNetworkInfo(chainId);
+                } catch (error) {
+                    updateStatus('用户拒绝访问账户: ' + error.message, 'error');
+                }
+            } else {
+                updateStatus('请安装MetaMask或其他Web3钱包', 'error');
+            }
+            
+            // 添加事件监听器
+            document.getElementById('connectWallet').addEventListener('click', connectWallet);
+            document.getElementById('loadContract').addEventListener('click', loadContract);
+            document.getElementById('getStakerInfo').addEventListener('click', getStakerInfo);
+            document.getElementById('stakeBtn').addEventListener('click', stake);
+            document.getElementById('withdrawBtn').addEventListener('click', withdraw);
+            document.getElementById('batchWithdrawBtn').addEventListener('click', batchWithdraw);
+            document.getElementById('setRewardAddressBtn').addEventListener('click', setRewardAddress);
+            document.getElementById('setForwardAddressBtn').addEventListener('click', setForwardAddress);
+            document.getElementById('getPoolBalanceBtn').addEventListener('click', getPoolBalance);
+            document.getElementById('getTotalStakedBtn').addEventListener('click', getTotalStaked);
+            document.getElementById('getOwnerBtn').addEventListener('click', getOwner);
+            document.getElementById('getRewardAddressBtn').addEventListener('click', getRewardAddress);
+            document.getElementById('getForwardAddressBtn').addEventListener('click', getForwardAddress);
+        });
+        
+        // 连接钱包函数
+        async function connectWallet() {
+            if (window.ethereum) {
+                try {
+                    accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    updateWalletInfo();
+                    
+                    // 获取当前网络
+                    const chainId = await web3.eth.getChainId();
+                    updateNetworkInfo(chainId);
+                } catch (error) {
+                    updateStatus('连接钱包失败: ' + error.message, 'error');
+                }
+            } else {
+                updateStatus('请安装MetaMask或其他Web3钱包', 'error');
+            }
+        }
+        
+        // 更新钱包信息
+        function updateWalletInfo() {
+            if (accounts.length > 0) {
+                document.getElementById('connectWallet').textContent = '已连接';
+                document.getElementById('walletAddress').textContent = shortenAddress(accounts[0]);
+            } else {
+                document.getElementById('connectWallet').textContent = '连接钱包';
+                document.getElementById('walletAddress').textContent = '未连接钱包';
+            }
+        }
+        
+        // 更新网络信息
+        function updateNetworkInfo(chainId) {
+            let networkName;
+            switch (chainId) {
+                case 1: networkName = '以太坊主网'; break;
+                case 56: networkName = 'BSC主网'; break;
+                case 97: networkName = 'BSC测试网'; break;
+                default: networkName = `未知网络 (${chainId})`;
+            }
+            document.getElementById('network').textContent = networkName;
+            currentNetwork = chainId;
+        }
+        
+        // 加载合约
+        async function loadContract() {
+            const contractAddress = document.getElementById('contractAddress').value.trim();
+            const usdtAddress = document.getElementById('usdtAddress').value.trim();
+            
+            if (!contractAddress || !usdtAddress) {
+                updateStatus('请输入合约地址和USDT地址', 'error');
+                return;
+            }
+            
+            try {
+                // 加载质押合约
+                contract = new web3.eth.Contract(contractABI, contractAddress);
+                
+                // 加载USDT合约
+                usdtContract = new web3.eth.Contract(usdtABI, usdtAddress);
+                
+                document.getElementById('contractStatus').style.display = 'block';
+                updateStatus('合约加载成功', 'success');
+                
+                // 自动查询一些基本信息
+                getOwner();
+                getPoolBalance();
+                getTotalStaked();
+                getRewardAddress();
+                getForwardAddress();
+                
+                // 如果已输入质押者地址，自动查询
+                const stakerAddress = document.getElementById('stakerAddress').value.trim();
+                if (stakerAddress) {
+                    getStakerInfo();
+                }
+            } catch (error) {
+                updateStatus('合约加载失败: ' + error.message, 'error');
+                console.error(error);
+            }
+        }
+        
+        // 查询质押者信息
+        async function getStakerInfo() {
+            if (!contract) {
+                updateStatus('请先加载合约', 'error');
+                return;
+            }
+            
+            const stakerAddress = document.getElementById('stakerAddress').value.trim();
+            if (!stakerAddress) {
+                updateStatus('请输入质押者地址', 'error');
+                return;
+            }
+            
+            try {
+                updateStatus('正在查询质押者信息...', 'info');
+                
+                const stakerInfo = await contract.methods.getStakerInfo(stakerAddress).call();
+                const display = document.getElementById('stakerInfoDisplay');
+                
+                document.getElementById('stakeAmount').textContent = formatUSDT(stakerInfo.amount);
+                document.getElementById('stakeTime').textContent = formatTimestamp(stakerInfo.stakeTime);
+                document.getElementById('rewardTime').textContent = formatTimestamp(stakerInfo.rewardTime);
+                document.getElementById('pendingReward').textContent = formatUSDT(stakerInfo.reward);
+                
+                display.style.display = 'block';
+                updateStatus('质押者信息查询成功', 'success');
+            } catch (error) {
+                updateStatus('查询质押者信息失败: ' + error.message, 'error');
+                console.error(error);
+            }
+        }
+        
+        // 质押函数
+        async function stake() {
+            if (!contract || !usdtContract) {
+                updateStatus('请先加载合约', 'error');
+                return;
+            }
+            
+            const amountInput = document.getElementById('stakeAmountInput').value.trim();
+            if (!amountInput || isNaN(amountInput) || parseFloat(amountInput) <= 0) {
+                updateStatus('请输入有效的质押金额', 'error');
+                return;
+            }
+            
+            try {
+                updateStatus('正在处理质押...', 'info');
+                
+                // 获取USDT小数位数
+                const decimals = await usdtContract.methods.decimals().call();
+                const amount = web3.utils.toWei(amountInput, 'ether').slice(0, -(18 - decimals));
+                
+                // 授权合约使用USDT
+                await usdtContract.methods.approve(contract._address, amount)
+                    .send({ from: accounts[0] });
+                
+                // 执行质押
+                await contract.methods.stake(amount)
+                    .send({ from: accounts[0] });
+                
+                updateStatus('质押成功', 'success');
+                
+                // 刷新质押者信息
+                getStakerInfo();
+                getPoolBalance();
+                getTotalStaked();
+            } catch (error) {
+                updateStatus('质押失败: ' + error.message, 'error');
+                console.error(error);
+            }
+        }
+        
+        // 提取函数
+        async function withdraw() {
+            if (!contract) {
+                updateStatus('请先加载合约', 'error');
+                return;
+            }
+            
+            const amountInput = document.getElementById('withdrawAmountInput').value.trim();
+            if (!amountInput || isNaN(amountInput) || parseFloat(amountInput) <= 0) {
+                updateStatus('请输入有效的提取金额', 'error');
+                return;
+            }
+            
+            try {
+                updateStatus('正在处理提取...', 'info');
+                
+                // 获取USDT小数位数
+                const decimals = await usdtContract.methods.decimals().call();
+                const amount = web3.utils.toWei(amountInput, 'ether').slice(0, -(18 - decimals));
+                
+                // 执行提取
+                await contract.methods.withdraw(amount)
+                    .send({ from: accounts[0] });
+                
+                updateStatus('提取成功', 'success');
+                
+                // 刷新质押者信息
+                getStakerInfo();
+                getPoolBalance();
+                getTotalStaked();
+            } catch (error) {
+                updateStatus('提取失败: ' + error.message, 'error');
+                console.error(error);
+            }
+        }
+        
+        // 批量提款函数
+        async function batchWithdraw() {
+            if (!contract) {
+                updateStatus('请先加载合约', 'error');
+                return;
+            }
+            
+            const addressesText = document.getElementById('batchAddresses').value.trim();
+            if (!addressesText) {
+                updateStatus('请输入至少一个提款地址', 'error');
+                return;
+            }
+            
+            // 解析地址列表
+            const addresses = addressesText.split('\n')
+                .map(addr => addr.trim())
+                .filter(addr => addr.length > 0);
+            
+            if (addresses.length === 0) {
+                updateStatus('没有有效的提款地址', 'error');
+                return;
+            }
+            
+            // 检查地址有效性
+            for (const addr of addresses) {
+                if (!web3.utils.isAddress(addr)) {
+                    updateStatus(`无效的地址: ${addr}`, 'error');
+                    return;
+                }
+            }
+            
+            try {
+                updateStatus('正在处理批量提款...', 'info');
+                
+                // 发送交易
+                const tx = await contract.methods.batch_withdraw(addresses)
+                    .send({ from: accounts[0] });
+                
+                updateStatus(`批量提款成功! 交易哈希: ${tx.transactionHash}`, 'success');
+                
+                // 刷新池余额和总质押量
+                getPoolBalance();
+                getTotalStaked();
+            } catch (error) {
+                updateStatus('批量提款失败: ' + error.message, 'error');
+                console.error(error);
+            }
+        }
+        
+        // 设置奖励地址
+        async function setRewardAddress() {
+            if (!contract) {
+                updateStatus('请先加载合约', 'error');
+                return;
+            }
+            
+            const rewardAddress = document.getElementById('rewardAddressInput').value.trim();
+            if (!rewardAddress || !web3.utils.isAddress(rewardAddress)) {
+                updateStatus('请输入有效的奖励地址', 'error');
+                return;
+            }
+            
+            try {
+                updateStatus('正在设置奖励地址...', 'info');
+                
+                await contract.methods.setRewardAddress(rewardAddress)
+                    .send({ from: accounts[0] });
+                
+                updateStatus('奖励地址设置成功', 'success');
+                
+                // 刷新奖励地址显示
+                getRewardAddress();
+            } catch (error) {
+                updateStatus('设置奖励地址失败: ' + error.message, 'error');
+                console.error(error);
+            }
+        }
+        
+        // 设置转发地址
+        async function setForwardAddress() {
+            if (!contract) {
+                updateStatus('请先加载合约', 'error');
+                return;
+            }
+            
+            const forwardAddress = document.getElementById('forwardAddressInput').value.trim();
+            if (!forwardAddress || !web3.utils.isAddress(forwardAddress)) {
+                updateStatus('请输入有效的转发地址', 'error');
+                return;
+            }
+            
+            try {
+                updateStatus('正在设置转发地址...', 'info');
+                
+                await contract.methods.setForwardAddress(forwardAddress)
+                    .send({ from: accounts[0] });
+                
+                updateStatus('转发地址设置成功', 'success');
+                
+                // 刷新转发地址显示
+                getForwardAddress();
+            } catch (error) {
+                updateStatus('设置转发地址失败: ' + error.message, 'error');
+                console.error(error);
+            }
+        }
+        
+        // 查询池余额
+        async function getPoolBalance() {
+            if (!contract) {
+                return;
+            }
+            
+            try {
+                const balance = await contract.methods.poolBalance().call();
+                document.getElementById('poolBalance').textContent = formatUSDT(balance);
+            } catch (error) {
+                console.error('查询池余额失败:', error);
+            }
+        }
+        
+        // 查询总质押量
+        async function getTotalStaked() {
+            if (!contract) {
+                return;
+            }
+            
+            try {
+                const total = await contract.methods.totalStaked().call();
+                document.getElementById('totalStaked').textContent = formatUSDT(total);
+            } catch (error) {
+                console.error('查询总质押量失败:', error);
+            }
+        }
+        
+        // 查询合约所有者
+        async function getOwner() {
+            if (!contract) {
+                return;
+            }
+            
+            try {
+                const owner = await contract.methods.owner().call();
+                document.getElementById('contractOwner').textContent = shortenAddress(owner);
+            } catch (error) {
+                console.error('查询合约所有者失败:', error);
+            }
+        }
+        
+        // 查询奖励地址
+        async function getRewardAddress() {
+            if (!contract) {
+                return;
+            }
+            
+            try {
+                const rewardAddr = await contract.methods.rewardAddress().call();
+                document.getElementById('rewardAddress').textContent = shortenAddress(rewardAddr);
+            } catch (error) {
+                console.error('查询奖励地址失败:', error);
+            }
+        }
+        
+        // 查询转发地址
+        async function getForwardAddress() {
+            if (!contract) {
+                return;
+            }
+            
+            try {
+                const forwardAddr = await contract.methods.forwardAddress().call();
+                document.getElementById('forwardAddress').textContent = shortenAddress(forwardAddr);
+            } catch (error) {
+                console.error('查询转发地址失败:', error);
+            }
+        }
+        
+        // 更新状态信息
+        function updateStatus(message, type) {
+            const statusElement = document.getElementById('status');
+            statusElement.textContent = message;
+            statusElement.className = type;
+        }
+        
+        // 缩短地址显示
+        function shortenAddress(address) {
+            if (!address) return '';
+            return address.substring(0, 6) + '...' + address.substring(address.length - 4);
+        }
+        
+        // 格式化时间戳
+        function formatTimestamp(timestamp) {
+            if (!timestamp || timestamp === '0') return '-';
+            const date = new Date(timestamp * 1000);
+            return date.toLocaleString();
+        }
+        
+        // 格式化USDT金额
+        function formatUSDT(amount) {
+            if (!amount) return '0';
+            return (amount / 1e6).toFixed(2); // 假设USDT有6位小数
+        }
+    </script>
+</body>
+</html>
