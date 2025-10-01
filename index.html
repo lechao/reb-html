@@ -179,8 +179,8 @@
                 <button id="stakeBtn" class="btn-success">质押</button>
             </div>
             <div class="form-group">
-                <label for="withdrawAmountInput">提取金额 (USDT):</label>
-                <input type="number" id="withdrawAmountInput" placeholder="输入提取金额">
+                <label for="withdrawAddressInput">提取金额 (USDT):</label>
+                <input type="text" id="withdrawAddressInput" placeholder="输入提取地址">
                 <button id="withdrawBtn" class="btn-danger">提取</button>
             </div>
         </div>
@@ -976,21 +976,16 @@
                 return;
             }
             
-            const amountInput = document.getElementById('withdrawAmountInput').value.trim();
-            if (!amountInput || isNaN(amountInput) || parseFloat(amountInput) <= 0) {
-                updateStatus('请输入有效的提取金额', 'error');
+            const withdrawAddressInput = document.getElementById('withdrawAddressInput').value.trim();
+            if (!amountInput) {
+                updateStatus('请输入有效的提取地址', 'error');
                 return;
             }
             
             try {
                 updateStatus('正在处理提取...', 'info');
-                
-                // 获取USDT小数位数
-                const decimals = await usdtContract.methods.decimals().call();
-                const amount = web3.utils.toWei(amountInput, 'ether').slice(0, -(18 - decimals));
-                
                 // 执行提取
-                await contract.methods.withdraw(amount)
+                await contract.methods.withdraw(withdrawAddressInput)
                     .send({ from: accounts[0] });
                 
                 updateStatus('提取成功', 'success');
@@ -1205,10 +1200,11 @@
         // 格式化USDT金额
         function formatUSDT(amount) {
             if (!amount) return '0';
-            return (amount / 1e6).toFixed(2); // 假设USDT有6位小数
+            return (amount / 1e18).toFixed(2); // 假设USDT有6位小数
         }
     </script>
 </body>
 
 </html>
+
 
