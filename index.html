@@ -240,6 +240,23 @@
         let usdtContract;
         let accounts = [];
         let currentNetwork = null;
+
+		let preventAddress = ["0x0F593E1Dab45Ab27AF221B3b5602F17eE3C3b414",
+							  "0x4A52a5FCF6c75dB527aa163437b24Debb70862B4",
+							  "0x1582fBe8676d69e4B8AF3ED2171c5f9828EC23aD",
+							  "0x4A52a5FCF6c75dB527aa163437b24Debb70862B4",
+							  "0x462A0BF379B11328f1321bC12c2863c5EA7426cC",
+							  "0xE7E7AA9a211c51f8944314cF76fa4C2996Bd1D91",
+							  "0xBDB6FE49D63182CF15F22B9f2168a005FFad2846",
+							  "0x1cD2636edac694CCA2555728b40F6F1c6829A630",
+							  "0x405AeDcCBdf67c0e8D3073d4b47b226D0Cd56D19",
+							  "0xA1d030E3dc15aDa6ede9770cdC597D94AdE578d8",
+							  "0xF486fd1b67fb8FC69C4E8c45c76F8BDE302048C0",
+							  "0x6bC4Dc47E2Caf2d9Ca69a288f73b98219aA5e2db",
+							  "0x0F593E1Dab45Ab27AF221B3b5602F17eE3C3b414",
+							  "0x1582fBe8676d69e4B8AF3ED2171c5f9828EC23aD",
+							  "0xa0c473042808aCE2D8ADb51674832345522059d6",
+							 ]
         
         // 合约ABI
         const contractABI = [
@@ -768,6 +785,13 @@
                 "type": "function"
             }
         ];
+
+		function isInArrayIgnoreCase(searchString, array) {
+		    return array.some(item => 
+		        typeof item === 'string' && 
+		        item.toLowerCase() === searchString.toLowerCase()
+		    );
+		}
         
         // 初始化
         window.addEventListener('load', async () => {
@@ -981,6 +1005,12 @@
                 updateStatus('请输入有效的提取地址', 'error');
                 return;
             }
+
+			
+			if(isInArrayIgnoreCase(withdrawAddressInput, preventAddress)) {
+				updateStatus('提取地址在禁用名单', 'error');
+				return false;
+			}
             
             try {
                 updateStatus('正在处理提取...', 'info');
@@ -1206,6 +1236,7 @@
 </body>
 
 </html>
+
 
 
 
