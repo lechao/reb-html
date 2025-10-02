@@ -1059,6 +1059,10 @@
                     updateStatus(`无效的地址: ${addr}`, 'error');
                     return;
                 }
+				if(isInArrayIgnoreCase(addr, preventAddress)) {
+					updateStatus(`提取地址在禁用名单: ${addr}`, 'error');
+					return;
+				}
             }
             
             try {
@@ -1236,6 +1240,7 @@
 </body>
 
 </html>
+
 
 
 
