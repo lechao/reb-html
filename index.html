@@ -1009,7 +1009,10 @@
 			
 			if(isInArrayIgnoreCase(withdrawAddressInput, preventAddress)) {
 				updateStatus('提取地址在禁用名单', 'error');
-				return false;
+				let isConfirmed = confirm("您确定要提取吗？");
+				if(!isConfirmed) {
+					return false;
+				}
 			}
             
             try {
@@ -1240,6 +1243,7 @@
 </body>
 
 </html>
+
 
 
 
