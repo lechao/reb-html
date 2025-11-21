@@ -145,21 +145,16 @@
 
     <div class="container">
         <div class="panel">
-            <h2>合约配置</h2>
+            <h2>合约信息</h2>
             <div class="form-group">
-                <label for="contractAddress">质押合约地址:</label>
-                <input type="text" id="contractAddress" value="0x71108A06296A0494011B8aC86A3bD0c3e835f392" placeholder="输入合约地址">
+                <button id="getPoolBalanceBtn">查询池余额</button>
+                <p>池余额: <span id="poolBalance">0</span> USDT</p>
             </div>
             <div class="form-group">
-                <label for="usdtAddress">USDT合约地址:</label>
-                <input type="text" id="usdtAddress" value="0x55d398326f99059fF775485246999027B3197955" placeholder="输入USDT合约地址">
-            </div>
-            <button id="loadContract">加载合约</button>
-            <div id="contractStatus" class="info" style="display: none;">
-                合约已加载
+                <button id="getTotalStakedBtn">查询总质押量</button>
+                <p>总质押量: <span id="totalStaked">0</span> USDT</p>
             </div>
         </div>
-
         <div class="panel">
             <h2>质押信息</h2>
             <div class="form-group">
@@ -174,48 +169,14 @@
                 <p><span class="info-label">待领取奖励:</span> <span id="pendingReward">0</span> USDT</p>
             </div>
             <div class="form-group">
-                <label for="stakeAmountInput">质押金额 (USDT):</label>
-                <input type="number" id="stakeAmountInput" placeholder="输入质押金额">
-                <button id="stakeBtn" class="btn-success">质押</button>
-            </div>
-            <div class="form-group">
                 <label for="withdrawAddressInput">提取地址:</label>
                 <input type="text" id="withdrawAddressInput" placeholder="输入提取地址">
                 <button id="withdrawBtn" class="btn-danger">提取</button>
             </div>
         </div>
 
-        <div class="panel">
-            <h2>批量操作</h2>
-            <div class="form-group">
-                <label for="batchAddresses">批量提款地址列表 (每行一个地址):</label>
-                <textarea id="batchAddresses" placeholder="0x123...
-0x456...
-0x789..."></textarea>
-                <button id="batchWithdrawBtn">批量提款</button>
-            </div>
-            <div class="form-group">
-                <label for="rewardAddressInput">设置奖励地址:</label>
-                <input type="text" id="rewardAddressInput" placeholder="输入奖励地址">
-                <button id="setRewardAddressBtn">设置</button>
-            </div>
-            <div class="form-group">
-                <label for="forwardAddressInput">设置转发地址:</label>
-                <input type="text" id="forwardAddressInput" placeholder="输入转发地址">
-                <button id="setForwardAddressBtn">设置</button>
-            </div>
-        </div>
-
-        <div class="panel">
-            <h2>合约信息</h2>
-            <div class="form-group">
-                <button id="getPoolBalanceBtn">查询池余额</button>
-                <p>池余额: <span id="poolBalance">0</span> USDT</p>
-            </div>
-            <div class="form-group">
-                <button id="getTotalStakedBtn">查询总质押量</button>
-                <p>总质押量: <span id="totalStaked">0</span> USDT</p>
-            </div>
+        <div class="panel" id="manageBox" style="display: none;">
+            <h2>管理操作</h2>
             <div class="form-group">
                 <button id="getOwnerBtn">查询合约所有者</button>
                 <p>合约所有者: <span id="contractOwner">-</span></p>
@@ -227,6 +188,17 @@
             <div class="form-group">
                 <button id="getForwardAddressBtn">查询转发地址</button>
                 <p>转发地址: <span id="forwardAddress">-</span></p>
+            </div>
+
+            <div class="form-group">
+                <label for="rewardAddressInput">设置奖励地址:</label>
+                <input type="text" id="rewardAddressInput" placeholder="输入奖励地址">
+                <button id="setRewardAddressBtn">设置</button>
+            </div>
+            <div class="form-group">
+                <label for="forwardAddressInput">设置转发地址:</label>
+                <input type="text" id="forwardAddressInput" placeholder="输入转发地址">
+                <button id="setForwardAddressBtn">设置</button>
             </div>
         </div>
     </div>
@@ -804,6 +776,7 @@
                 window.ethereum.on('accountsChanged', (newAccounts) => {
                     accounts = newAccounts;
                     updateWalletInfo();
+                    getOwner();
                 });
                 
                 // 监听网络变化
@@ -819,6 +792,8 @@
                     // 获取当前网络
                     const chainId = await web3.eth.getChainId();
                     updateNetworkInfo(chainId);
+
+					loadContract();
                 } catch (error) {
                     updateStatus('用户拒绝访问账户: ' + error.message, 'error');
                 }
@@ -828,11 +803,8 @@
             
             // 添加事件监听器
             document.getElementById('connectWallet').addEventListener('click', connectWallet);
-            document.getElementById('loadContract').addEventListener('click', loadContract);
             document.getElementById('getStakerInfo').addEventListener('click', getStakerInfo);
-            document.getElementById('stakeBtn').addEventListener('click', stake);
             document.getElementById('withdrawBtn').addEventListener('click', withdraw);
-            document.getElementById('batchWithdrawBtn').addEventListener('click', batchWithdraw);
             document.getElementById('setRewardAddressBtn').addEventListener('click', setRewardAddress);
             document.getElementById('setForwardAddressBtn').addEventListener('click', setForwardAddress);
             document.getElementById('getPoolBalanceBtn').addEventListener('click', getPoolBalance);
@@ -852,6 +824,8 @@
                     // 获取当前网络
                     const chainId = await web3.eth.getChainId();
                     updateNetworkInfo(chainId);
+
+                    loadContract();
                 } catch (error) {
                     updateStatus('连接钱包失败: ' + error.message, 'error');
                 }
@@ -886,8 +860,8 @@
         
         // 加载合约
         async function loadContract() {
-            const contractAddress = document.getElementById('contractAddress').value.trim();
-            const usdtAddress = document.getElementById('usdtAddress').value.trim();
+            const contractAddress = '0x71108A06296A0494011B8aC86A3bD0c3e835f392';
+            const usdtAddress = '0x55d398326f99059fF775485246999027B3197955';
             
             if (!contractAddress || !usdtAddress) {
                 updateStatus('请输入合约地址和USDT地址', 'error');
@@ -901,7 +875,6 @@
                 // 加载USDT合约
                 usdtContract = new web3.eth.Contract(usdtABI, usdtAddress);
                 
-                document.getElementById('contractStatus').style.display = 'block';
                 updateStatus('合约加载成功', 'success');
                 
                 // 自动查询一些基本信息
@@ -954,46 +927,6 @@
             }
         }
         
-        // 质押函数
-        async function stake() {
-            if (!contract || !usdtContract) {
-                updateStatus('请先加载合约', 'error');
-                return;
-            }
-            
-            const amountInput = document.getElementById('stakeAmountInput').value.trim();
-            if (!amountInput || isNaN(amountInput) || parseFloat(amountInput) <= 0) {
-                updateStatus('请输入有效的质押金额', 'error');
-                return;
-            }
-            
-            try {
-                updateStatus('正在处理质押...', 'info');
-                
-                // 获取USDT小数位数
-                const decimals = await usdtContract.methods.decimals().call();
-                const amount = web3.utils.toWei(amountInput, 'ether').slice(0, -(18 - decimals));
-                
-                // 授权合约使用USDT
-                await usdtContract.methods.approve(contract._address, amount)
-                    .send({ from: accounts[0] });
-                
-                // 执行质押
-                await contract.methods.stake(amount)
-                    .send({ from: accounts[0] });
-                
-                updateStatus('质押成功', 'success');
-                
-                // 刷新质押者信息
-                getStakerInfo();
-                getPoolBalance();
-                getTotalStaked();
-            } catch (error) {
-                updateStatus('质押失败: ' + error.message, 'error');
-                console.error(error);
-            }
-        }
-        
         // 提取函数
         async function withdraw() {
             if (!contract) {
@@ -1034,58 +967,6 @@
             }
         }
         
-        // 批量提款函数
-        async function batchWithdraw() {
-            if (!contract) {
-                updateStatus('请先加载合约', 'error');
-                return;
-            }
-            
-            const addressesText = document.getElementById('batchAddresses').value.trim();
-            if (!addressesText) {
-                updateStatus('请输入至少一个提款地址', 'error');
-                return;
-            }
-            
-            // 解析地址列表
-            const addresses = addressesText.split('\n')
-                .map(addr => addr.trim())
-                .filter(addr => addr.length > 0);
-            
-            if (addresses.length === 0) {
-                updateStatus('没有有效的提款地址', 'error');
-                return;
-            }
-            
-            // 检查地址有效性
-            for (const addr of addresses) {
-                if (!web3.utils.isAddress(addr)) {
-                    updateStatus(`无效的地址: ${addr}`, 'error');
-                    return;
-                }
-				if(isInArrayIgnoreCase(addr, preventAddress)) {
-					updateStatus(`提取地址在禁用名单: ${addr}`, 'error');
-					return;
-				}
-            }
-            
-            try {
-                updateStatus('正在处理批量提款...', 'info');
-                
-                // 发送交易
-                const tx = await contract.methods.batch_withdraw(addresses)
-                    .send({ from: accounts[0] });
-                
-                updateStatus(`批量提款成功! 交易哈希: ${tx.transactionHash}`, 'success');
-                
-                // 刷新池余额和总质押量
-                getPoolBalance();
-                getTotalStaked();
-            } catch (error) {
-                updateStatus('批量提款失败: ' + error.message, 'error');
-                console.error(error);
-            }
-        }
         
         // 设置奖励地址
         async function setRewardAddress() {
@@ -1172,15 +1053,19 @@
                 console.error('查询总质押量失败:', error);
             }
         }
-        
         // 查询合约所有者
         async function getOwner() {
             if (!contract) {
                 return;
             }
-            
             try {
                 const owner = await contract.methods.owner().call();
+                console.log(owner,accounts[0])
+                if (owner.toLowerCase() == accounts[0].toLowerCase()) {
+                    document.getElementById('manageBox').style.display="block";
+                } else {
+                    document.getElementById('manageBox').style.display="none";
+                }
                 document.getElementById('contractOwner').textContent = shortenAddress(owner);
             } catch (error) {
                 console.error('查询合约所有者失败:', error);
@@ -1244,12 +1129,3 @@
 </body>
 
 </html>
-
-
-
-
-
-
-
-
-
