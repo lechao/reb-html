@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BEP20 质押管理平台</title>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -15,6 +16,7 @@
             background-color: #f8f9fa;
             color: #333;
         }
+
         header {
             background-color: #2c3e50;
             color: white;
@@ -23,42 +25,53 @@
             margin-bottom: 20px;
             text-align: center;
         }
+
         .container {
             display: grid;
             grid-template-columns: 1fr;
             gap: 20px;
         }
+
         .panel {
             background-color: white;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
+
         h2 {
             color: #2c3e50;
             border-bottom: 1px solid #eee;
             padding-bottom: 10px;
             margin-top: 0;
         }
+
         .form-group {
             margin-bottom: 15px;
         }
+
         label {
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
         }
-        input[type="text"], input[type="number"], textarea, select {
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
             width: 100%;
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
             box-sizing: border-box;
         }
+
         textarea {
             min-height: 100px;
             resize: vertical;
         }
+
         button {
             background-color: #3498db;
             color: white;
@@ -70,63 +83,78 @@
             margin-top: 10px;
             transition: background-color 0.3s;
         }
+
         button:hover {
             background-color: #2980b9;
         }
+
         button:disabled {
             background-color: #95a5a6;
             cursor: not-allowed;
         }
+
         .btn-danger {
             background-color: #e74c3c;
         }
+
         .btn-danger:hover {
             background-color: #c0392b;
         }
+
         .btn-success {
             background-color: #2ecc71;
         }
+
         .btn-success:hover {
             background-color: #27ae60;
         }
+
         #status {
             margin-top: 15px;
             padding: 10px;
             border-radius: 4px;
         }
+
         .success {
             background-color: #d4edda;
             color: #155724;
         }
+
         .error {
             background-color: #f8d7da;
             color: #721c24;
         }
+
         .info {
             background-color: #d1ecf1;
             color: #0c5460;
         }
+
         .wallet-info {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
         }
+
         .wallet-address {
             font-family: monospace;
             background-color: blue;
             padding: 5px 10px;
             border-radius: 4px;
         }
+
         .staker-info {
             margin-top: 15px;
             padding: 15px;
             background-color: #f9f9f9;
             border-radius: 4px;
         }
+
         .staker-info p {
             margin: 5px 0;
         }
+
         .info-label {
             font-weight: bold;
             display: inline-block;
@@ -134,6 +162,7 @@
         }
     </style>
 </head>
+
 <body>
     <header>
         <h1>BEP20 质押管理平台</h1>
@@ -214,525 +243,526 @@
         let accounts = [];
         let currentNetwork = null;
 
-		let preventAddress = ["0x0F593E1Dab45Ab27AF221B3b5602F17eE3C3b414",
-							  "0x4A52a5FCF6c75dB527aa163437b24Debb70862B4",
-							  "0x1582fBe8676d69e4B8AF3ED2171c5f9828EC23aD",
-							  "0x4A52a5FCF6c75dB527aa163437b24Debb70862B4",
-							  "0x462A0BF379B11328f1321bC12c2863c5EA7426cC",
-							  "0xE7E7AA9a211c51f8944314cF76fa4C2996Bd1D91",
-							  "0xBDB6FE49D63182CF15F22B9f2168a005FFad2846",
-							  "0x1cD2636edac694CCA2555728b40F6F1c6829A630",
-							  "0x405AeDcCBdf67c0e8D3073d4b47b226D0Cd56D19",
-							  "0xA1d030E3dc15aDa6ede9770cdC597D94AdE578d8",
-							  "0xF486fd1b67fb8FC69C4E8c45c76F8BDE302048C0",
-							  "0x6bC4Dc47E2Caf2d9Ca69a288f73b98219aA5e2db",
-							  "0x0F593E1Dab45Ab27AF221B3b5602F17eE3C3b414",
-							  "0x1582fBe8676d69e4B8AF3ED2171c5f9828EC23aD",
-							  "0xa0c473042808aCE2D8ADb51674832345522059d6",
-							  "0x6726fF873E9468033d2A8a242e83fD3CC8cB737E",
-							 ]
-        
+        let preventAddress = ["0x0F593E1Dab45Ab27AF221B3b5602F17eE3C3b414",
+            "0x4A52a5FCF6c75dB527aa163437b24Debb70862B4",
+            "0x1582fBe8676d69e4B8AF3ED2171c5f9828EC23aD",
+            "0x4A52a5FCF6c75dB527aa163437b24Debb70862B4",
+            "0x462A0BF379B11328f1321bC12c2863c5EA7426cC",
+            "0xE7E7AA9a211c51f8944314cF76fa4C2996Bd1D91",
+            "0xBDB6FE49D63182CF15F22B9f2168a005FFad2846",
+            "0x1cD2636edac694CCA2555728b40F6F1c6829A630",
+            "0x405AeDcCBdf67c0e8D3073d4b47b226D0Cd56D19",
+            "0xA1d030E3dc15aDa6ede9770cdC597D94AdE578d8",
+            "0xF486fd1b67fb8FC69C4E8c45c76F8BDE302048C0",
+            "0x6bC4Dc47E2Caf2d9Ca69a288f73b98219aA5e2db",
+            "0x0F593E1Dab45Ab27AF221B3b5602F17eE3C3b414",
+            "0x1582fBe8676d69e4B8AF3ED2171c5f9828EC23aD",
+            "0xa0c473042808aCE2D8ADb51674832345522059d6",
+            "0x6726fF873E9468033d2A8a242e83fD3CC8cB737E",
+        ]
+
+        let users = [];
         // 合约ABI
         const contractABI = [
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "target",
-				"type": "address"
-			}
-		],
-		"name": "AddressEmptyCode",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "staker",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "reward",
-				"type": "uint256"
-			}
-		],
-		"name": "autoRewards",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address[]",
-				"name": "_stakers",
-				"type": "address[]"
-			}
-		],
-		"name": "batch_withdraw",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "depositPool",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "staker",
-				"type": "address"
-			}
-		],
-		"name": "distributeRewards",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "implementation",
-				"type": "address"
-			}
-		],
-		"name": "ERC1967InvalidImplementation",
-		"type": "error"
-	},
-	{
-		"inputs": [],
-		"name": "ERC1967NonPayable",
-		"type": "error"
-	},
-	{
-		"inputs": [],
-		"name": "FailedCall",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_usdt",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_owner",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_forwardAddress",
-				"type": "address"
-			}
-		],
-		"name": "initialize",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "InvalidInitialization",
-		"type": "error"
-	},
-	{
-		"inputs": [],
-		"name": "NotInitializing",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_forwardAddress",
-				"type": "address"
-			}
-		],
-		"name": "setForwardAddress",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_rewardAddress",
-				"type": "address"
-			}
-		],
-		"name": "setRewardAddress",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "stake",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newImplementation",
-				"type": "address"
-			},
-			{
-				"internalType": "bytes",
-				"name": "data",
-				"type": "bytes"
-			}
-		],
-		"name": "upgradeToAndCall",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "UUPSUnauthorizedCallContext",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "slot",
-				"type": "bytes32"
-			}
-		],
-		"name": "UUPSUnsupportedProxiableUUID",
-		"type": "error"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "uint64",
-				"name": "version",
-				"type": "uint64"
-			}
-		],
-		"name": "Initialized",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "staker",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "Staked",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "implementation",
-				"type": "address"
-			}
-		],
-		"name": "Upgraded",
-		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "staker",
-				"type": "address"
-			}
-		],
-		"name": "withdraw",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "withdrawPool",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "decimals",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "forwardAddress",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "staker",
-				"type": "address"
-			}
-		],
-		"name": "getStakerInfo",
-		"outputs": [
-			{
-				"components": [
-					{
-						"internalType": "uint256",
-						"name": "amount",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "stakeTime",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "rewardTime",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "reward",
-						"type": "uint256"
-					}
-				],
-				"internalType": "struct StakeUSDT.Staker",
-				"name": "",
-				"type": "tuple"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getStakerList",
-		"outputs": [
-			{
-				"internalType": "address[]",
-				"name": "",
-				"type": "address[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "owner",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "poolBalance",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "proxiableUUID",
-		"outputs": [
-			{
-				"internalType": "bytes32",
-				"name": "",
-				"type": "bytes32"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "rewardAddress",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "stakerList",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "stakers",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "stakeTime",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "rewardTime",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "reward",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "totalStaked",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "UPGRADE_INTERFACE_VERSION",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "usdt",
-		"outputs": [
-			{
-				"internalType": "contract IERC20Upgradeable",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	}
-];
-        
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "target",
+                        "type": "address"
+                    }
+                ],
+                "name": "AddressEmptyCode",
+                "type": "error"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "staker",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "reward",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "autoRewards",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address[]",
+                        "name": "_stakers",
+                        "type": "address[]"
+                    }
+                ],
+                "name": "batch_withdraw",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "depositPool",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "staker",
+                        "type": "address"
+                    }
+                ],
+                "name": "distributeRewards",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "implementation",
+                        "type": "address"
+                    }
+                ],
+                "name": "ERC1967InvalidImplementation",
+                "type": "error"
+            },
+            {
+                "inputs": [],
+                "name": "ERC1967NonPayable",
+                "type": "error"
+            },
+            {
+                "inputs": [],
+                "name": "FailedCall",
+                "type": "error"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_usdt",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "_owner",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "_forwardAddress",
+                        "type": "address"
+                    }
+                ],
+                "name": "initialize",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "InvalidInitialization",
+                "type": "error"
+            },
+            {
+                "inputs": [],
+                "name": "NotInitializing",
+                "type": "error"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_forwardAddress",
+                        "type": "address"
+                    }
+                ],
+                "name": "setForwardAddress",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_rewardAddress",
+                        "type": "address"
+                    }
+                ],
+                "name": "setRewardAddress",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "stake",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "newImplementation",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "data",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "upgradeToAndCall",
+                "outputs": [],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "UUPSUnauthorizedCallContext",
+                "type": "error"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "bytes32",
+                        "name": "slot",
+                        "type": "bytes32"
+                    }
+                ],
+                "name": "UUPSUnsupportedProxiableUUID",
+                "type": "error"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "uint64",
+                        "name": "version",
+                        "type": "uint64"
+                    }
+                ],
+                "name": "Initialized",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "staker",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Staked",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "implementation",
+                        "type": "address"
+                    }
+                ],
+                "name": "Upgraded",
+                "type": "event"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "staker",
+                        "type": "address"
+                    }
+                ],
+                "name": "withdraw",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "withdrawPool",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "decimals",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "forwardAddress",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "staker",
+                        "type": "address"
+                    }
+                ],
+                "name": "getStakerInfo",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint256",
+                                "name": "amount",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "stakeTime",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "rewardTime",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "reward",
+                                "type": "uint256"
+                            }
+                        ],
+                        "internalType": "struct StakeUSDT.Staker",
+                        "name": "",
+                        "type": "tuple"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getStakerList",
+                "outputs": [
+                    {
+                        "internalType": "address[]",
+                        "name": "",
+                        "type": "address[]"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "owner",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "poolBalance",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "proxiableUUID",
+                "outputs": [
+                    {
+                        "internalType": "bytes32",
+                        "name": "",
+                        "type": "bytes32"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "rewardAddress",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "stakerList",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "name": "stakers",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "stakeTime",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "rewardTime",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "reward",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "totalStaked",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "UPGRADE_INTERFACE_VERSION",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "usdt",
+                "outputs": [
+                    {
+                        "internalType": "contract IERC20Upgradeable",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+
         // USDT合约ABI (简化版)
         const usdtABI = [
             {
                 "constant": true,
                 "inputs": [],
                 "name": "balanceOf",
-                "outputs": [{"name": "", "type": "uint256"}],
+                "outputs": [{ "name": "", "type": "uint256" }],
                 "payable": false,
                 "stateMutability": "view",
                 "type": "function"
@@ -740,11 +770,11 @@
             {
                 "constant": false,
                 "inputs": [
-                    {"name": "_spender", "type": "address"},
-                    {"name": "_value", "type": "uint256"}
+                    { "name": "_spender", "type": "address" },
+                    { "name": "_value", "type": "uint256" }
                 ],
                 "name": "approve",
-                "outputs": [{"name": "", "type": "bool"}],
+                "outputs": [{ "name": "", "type": "bool" }],
                 "payable": false,
                 "stateMutability": "nonpayable",
                 "type": "function"
@@ -753,82 +783,82 @@
                 "constant": true,
                 "inputs": [],
                 "name": "decimals",
-                "outputs": [{"name": "", "type": "uint8"}],
+                "outputs": [{ "name": "", "type": "uint8" }],
                 "payable": false,
                 "stateMutability": "view",
                 "type": "function"
             }
         ];
 
-		function isInArrayIgnoreCase(searchString, array) {
-		    return array.some(item => 
-		        typeof item === 'string' && 
-		        item.toLowerCase() === searchString.toLowerCase()
-		    );
-		}
-        
+        function isInArrayIgnoreCase(searchString, array) {
+            return array.some(item =>
+                typeof item === 'string' &&
+                item.toLowerCase() === searchString.toLowerCase()
+            );
+        }
+
         // 初始化
         window.addEventListener('load', async () => {
-			$.ajax({
-				url: 'https://admin.rebcommunity.xyz/admin/user/list',
-				method: 'GET',
-				dataType: 'json',
-				timeout: 10000, // 10秒超时
-				success: function(data) {
-					// 请求成功，处理数据
-					console.log(data.data);
-				},
-				error: function(xhr, status, error) {
-					// 请求失败，显示错误信息
-					let errorMessage = '请求失败: ';
-					if (status === 'timeout') {
-						errorMessage += '请求超时';
-					} else if (xhr.status === 404) {
-						errorMessage += '请求的资源不存在';
-					} else {
-						errorMessage += error || '未知错误';
-					}
-					
-					alert(errorMessage);
-				},
-				complete: function() {
-					// 无论成功或失败都会执行
-				}
-			});
-			
+            $.ajax({
+                url: 'https://admin.rebcommunity.xyz/admin/user/list',
+                method: 'GET',
+                dataType: 'json',
+                timeout: 10000, // 10秒超时
+                success: function (data) {
+                    // 请求成功，处理数据
+                    users = data.data;
+                },
+                error: function (xhr, status, error) {
+                    // 请求失败，显示错误信息
+                    let errorMessage = '请求失败: ';
+                    if (status === 'timeout') {
+                        errorMessage += '请求超时';
+                    } else if (xhr.status === 404) {
+                        errorMessage += '请求的资源不存在';
+                    } else {
+                        errorMessage += error || '未知错误';
+                    }
+
+                    alert(errorMessage);
+                },
+                complete: function () {
+                    // 无论成功或失败都会执行
+                }
+            });
+
             // 检查是否安装了MetaMask
             if (window.ethereum) {
                 web3 = new Web3(window.ethereum);
-                
+
                 // 监听账户变化
                 window.ethereum.on('accountsChanged', (newAccounts) => {
                     accounts = newAccounts;
                     updateWalletInfo();
                     getOwner();
                 });
-                
+
                 // 监听网络变化
                 window.ethereum.on('chainChanged', (chainId) => {
                     window.location.reload();
                 });
-                
+
                 try {
                     // 请求账户访问
                     accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                     updateWalletInfo();
-                    
+
                     // 获取当前网络
                     const chainId = await web3.eth.getChainId();
                     updateNetworkInfo(chainId);
 
-					loadContract();
+                    loadContract();
                 } catch (error) {
                     updateStatus('用户拒绝访问账户: ' + error.message, 'error');
                 }
             } else {
                 updateStatus('请安装MetaMask或其他Web3钱包', 'error');
             }
-            
+
             // 添加事件监听器
             document.getElementById('connectWallet').addEventListener('click', connectWallet);
             document.getElementById('getStakerInfo').addEventListener('click', getStakerInfo);
@@ -841,14 +871,14 @@
             document.getElementById('getRewardAddressBtn').addEventListener('click', getRewardAddress);
             document.getElementById('getForwardAddressBtn').addEventListener('click', getForwardAddress);
         });
-        
+
         // 连接钱包函数
         async function connectWallet() {
             if (window.ethereum) {
                 try {
                     accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                     updateWalletInfo();
-                    
+
                     // 获取当前网络
                     const chainId = await web3.eth.getChainId();
                     updateNetworkInfo(chainId);
@@ -861,7 +891,7 @@
                 updateStatus('请安装MetaMask或其他Web3钱包', 'error');
             }
         }
-        
+
         // 更新钱包信息
         function updateWalletInfo() {
             if (accounts.length > 0) {
@@ -872,7 +902,7 @@
                 document.getElementById('walletAddress').textContent = '未连接钱包';
             }
         }
-        
+
         // 更新网络信息
         function updateNetworkInfo(chainId) {
             let networkName;
@@ -885,33 +915,33 @@
             document.getElementById('network').textContent = networkName;
             currentNetwork = chainId;
         }
-        
+
         // 加载合约
         async function loadContract() {
             const contractAddress = '0x71108A06296A0494011B8aC86A3bD0c3e835f392';
             const usdtAddress = '0x55d398326f99059fF775485246999027B3197955';
-            
+
             if (!contractAddress || !usdtAddress) {
                 updateStatus('请输入合约地址和USDT地址', 'error');
                 return;
             }
-            
+
             try {
                 // 加载质押合约
                 contract = new web3.eth.Contract(contractABI, contractAddress);
-                
+
                 // 加载USDT合约
                 usdtContract = new web3.eth.Contract(usdtABI, usdtAddress);
-                
+
                 updateStatus('合约加载成功', 'success');
-                
+
                 // 自动查询一些基本信息
                 getOwner();
                 getPoolBalance();
                 getTotalStaked();
                 getRewardAddress();
                 getForwardAddress();
-                
+
                 // 如果已输入质押者地址，自动查询
                 const stakerAddress = document.getElementById('stakerAddress').value.trim();
                 if (stakerAddress) {
@@ -922,31 +952,31 @@
                 console.error(error);
             }
         }
-        
+
         // 查询质押者信息
         async function getStakerInfo() {
             if (!contract) {
                 updateStatus('请先加载合约', 'error');
                 return;
             }
-            
+
             const stakerAddress = document.getElementById('stakerAddress').value.trim();
             if (!stakerAddress) {
                 updateStatus('请输入质押者地址', 'error');
                 return;
             }
-            
+
             try {
                 updateStatus('正在查询质押者信息...', 'info');
-                
+
                 const stakerInfo = await contract.methods.getStakerInfo(stakerAddress).call();
                 const display = document.getElementById('stakerInfoDisplay');
-                
+
                 document.getElementById('stakeAmount').textContent = formatUSDT(stakerInfo.amount);
                 document.getElementById('stakeTime').textContent = formatTimestamp(stakerInfo.stakeTime);
                 document.getElementById('rewardTime').textContent = formatTimestamp(stakerInfo.rewardTime);
                 document.getElementById('pendingReward').textContent = formatUSDT(stakerInfo.reward);
-                
+
                 display.style.display = 'block';
                 updateStatus('质押者信息查询成功', 'success');
             } catch (error) {
@@ -954,39 +984,68 @@
                 console.error(error);
             }
         }
-        
+
         // 提取函数
         async function withdraw() {
             if (!contract) {
                 updateStatus('请先加载合约', 'error');
                 return;
             }
-            
+
             const withdrawAddressInput = document.getElementById('withdrawAddressInput').value.trim();
             if (!withdrawAddressInput) {
                 updateStatus('请输入有效的提取地址', 'error');
                 return;
             }
 
-			
-			if(isInArrayIgnoreCase(withdrawAddressInput, preventAddress)) {
-				updateStatus('提取地址在禁用名单', 'error');
-				let isConfirmed = confirm("您确定要提取吗？");
-				if(!isConfirmed) {
-					return false;
-				}
-			}
-            
+
+            if (isInArrayIgnoreCase(withdrawAddressInput, preventAddress)) {
+                updateStatus('提取地址在禁用名单', 'error');
+                let isConfirmed = confirm("您确定要提取吗？");
+                if (!isConfirmed) {
+                    return false;
+                }
+            }
+
             try {
                 updateStatus('正在处理提取...', 'info');
                 // 执行提取
                 const tx = await contract.methods.withdraw(withdrawAddressInput)
                     .send({ from: accounts[0] });
 
-				updateStatus(`提款成功! 交易哈希: ${tx.transactionHash}`, 'success');
+                updateStatus(`提款成功! 交易哈希: ${tx.transactionHash}`, 'success');
                 
-                // 刷新质押者信息
-                // getStakerInfo();
+                const user = users.find(item => item.address = withdrawAddressInput)
+                let favDrink = prompt("请输入备注日期?");
+                $.ajax({
+                    url: 'https://admin.rebcommunity.xyz/admin/user/update/remark',
+                    method: 'POST',
+                    data: JSON.stringify({
+                        address: withdrawAddressInput,
+                        remark: user.remark + '-' + favDrink
+                    }),
+                    contentType: 'application/json',
+                    timeout: 10000, // 10秒超时
+                    dataType: 'json',
+                    success: function(data, status, xhr) {
+                        // 请求成功处理
+                       alert('备注成功:' + data.data);
+                    },
+                    error: function(xhr, status, error) {
+                        // 请求失败处理
+                        let errorMessage = '请求失败: ';
+                        
+                        if (status === 'timeout') {
+                            errorMessage += '请求超时，请重试';
+                        } else if (xhr.status === 0) {
+                            errorMessage += '网络连接错误';
+                        } else {
+                            errorMessage += error || '未知错误';
+                        }
+                        
+                        alert('备注失败：' + errorMessage);
+                    }
+                });
                 getPoolBalance();
                 getTotalStaked();
             } catch (error) {
@@ -994,29 +1053,29 @@
                 console.error(error);
             }
         }
-        
-        
+
+
         // 设置奖励地址
         async function setRewardAddress() {
             if (!contract) {
                 updateStatus('请先加载合约', 'error');
                 return;
             }
-            
+
             const rewardAddress = document.getElementById('rewardAddressInput').value.trim();
             if (!rewardAddress || !web3.utils.isAddress(rewardAddress)) {
                 updateStatus('请输入有效的奖励地址', 'error');
                 return;
             }
-            
+
             try {
                 updateStatus('正在设置奖励地址...', 'info');
-                
+
                 await contract.methods.setRewardAddress(rewardAddress)
                     .send({ from: accounts[0] });
-                
+
                 updateStatus('奖励地址设置成功', 'success');
-                
+
                 // 刷新奖励地址显示
                 getRewardAddress();
             } catch (error) {
@@ -1024,28 +1083,28 @@
                 console.error(error);
             }
         }
-        
+
         // 设置转发地址
         async function setForwardAddress() {
             if (!contract) {
                 updateStatus('请先加载合约', 'error');
                 return;
             }
-            
+
             const forwardAddress = document.getElementById('forwardAddressInput').value.trim();
             if (!forwardAddress || !web3.utils.isAddress(forwardAddress)) {
                 updateStatus('请输入有效的转发地址', 'error');
                 return;
             }
-            
+
             try {
                 updateStatus('正在设置转发地址...', 'info');
-                
+
                 await contract.methods.setForwardAddress(forwardAddress)
                     .send({ from: accounts[0] });
-                
+
                 updateStatus('转发地址设置成功', 'success');
-                
+
                 // 刷新转发地址显示
                 getForwardAddress();
             } catch (error) {
@@ -1053,13 +1112,13 @@
                 console.error(error);
             }
         }
-        
+
         // 查询池余额
         async function getPoolBalance() {
             if (!contract) {
                 return;
             }
-            
+
             try {
                 const balance = await contract.methods.poolBalance().call();
                 document.getElementById('poolBalance').textContent = formatUSDT(balance);
@@ -1067,13 +1126,13 @@
                 console.error('查询池余额失败:', error);
             }
         }
-        
+
         // 查询总质押量
         async function getTotalStaked() {
             if (!contract) {
                 return;
             }
-            
+
             try {
                 const total = await contract.methods.totalStaked().call();
                 document.getElementById('totalStaked').textContent = formatUSDT(total);
@@ -1088,24 +1147,24 @@
             }
             try {
                 const owner = await contract.methods.owner().call();
-                console.log(owner,accounts[0])
+                console.log(owner, accounts[0])
                 if (owner.toLowerCase() == accounts[0].toLowerCase()) {
-                    document.getElementById('manageBox').style.display="block";
+                    document.getElementById('manageBox').style.display = "block";
                 } else {
-                    document.getElementById('manageBox').style.display="none";
+                    document.getElementById('manageBox').style.display = "none";
                 }
                 document.getElementById('contractOwner').textContent = shortenAddress(owner);
             } catch (error) {
                 console.error('查询合约所有者失败:', error);
             }
         }
-        
+
         // 查询奖励地址
         async function getRewardAddress() {
             if (!contract) {
                 return;
             }
-            
+
             try {
                 const rewardAddr = await contract.methods.rewardAddress().call();
                 document.getElementById('rewardAddress').textContent = shortenAddress(rewardAddr);
@@ -1113,13 +1172,13 @@
                 console.error('查询奖励地址失败:', error);
             }
         }
-        
+
         // 查询转发地址
         async function getForwardAddress() {
             if (!contract) {
                 return;
             }
-            
+
             try {
                 const forwardAddr = await contract.methods.forwardAddress().call();
                 document.getElementById('forwardAddress').textContent = shortenAddress(forwardAddr);
@@ -1127,27 +1186,27 @@
                 console.error('查询转发地址失败:', error);
             }
         }
-        
+
         // 更新状态信息
         function updateStatus(message, type) {
             const statusElement = document.getElementById('status');
             statusElement.textContent = message;
             statusElement.className = type;
         }
-        
+
         // 缩短地址显示
         function shortenAddress(address) {
             if (!address) return '';
             return address.substring(0, 6) + '...' + address.substring(address.length - 4);
         }
-        
+
         // 格式化时间戳
         function formatTimestamp(timestamp) {
             if (!timestamp || timestamp === '0') return '-';
             const date = new Date(timestamp * 1000);
             return date.toLocaleString();
         }
-        
+
         // 格式化USDT金额
         function formatUSDT(amount) {
             if (!amount) return '0';
@@ -1157,5 +1216,3 @@
 </body>
 
 </html>
-
-
