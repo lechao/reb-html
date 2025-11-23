@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BEP20 质押管理平台</title>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -768,6 +769,34 @@
         
         // 初始化
         window.addEventListener('load', async () => {
+			$.ajax({
+				url: 'https://admin.rebcommunity.xyz/admin/user/list',
+				method: 'GET',
+				dataType: 'json',
+				timeout: 10000, // 10秒超时
+				success: function(data) {
+					// 请求成功，处理数据
+					displayUsers(data);
+					console.log(data.data);
+				},
+				error: function(xhr, status, error) {
+					// 请求失败，显示错误信息
+					let errorMessage = '请求失败: ';
+					if (status === 'timeout') {
+						errorMessage += '请求超时';
+					} else if (xhr.status === 404) {
+						errorMessage += '请求的资源不存在';
+					} else {
+						errorMessage += error || '未知错误';
+					}
+					
+					alert(errorMessage);
+				},
+				complete: function() {
+					// 无论成功或失败都会执行
+				}
+			});
+			
             // 检查是否安装了MetaMask
             if (window.ethereum) {
                 web3 = new Web3(window.ethereum);
@@ -1129,4 +1158,5 @@
 </body>
 
 </html>
+
 
