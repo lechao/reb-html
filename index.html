@@ -196,6 +196,7 @@
                 <p><span class="info-label">质押金额:</span> <span id="stakeAmount">0</span> USDT</p>
                 <p><span class="info-label">质押时间:</span> <span id="stakeTime">-</span></p>
                 <p><span class="info-label">最后奖励时间:</span> <span id="rewardTime">-</span></p>
+                <p><span class="info-label">备注信息:</span> <span id="remark">-</span></p>
                 <p><span class="info-label">待领取奖励:</span> <span id="pendingReward">0</span> USDT</p>
             </div>
             <div class="form-group">
@@ -807,7 +808,6 @@
                 success: function (data) {
                     // 请求成功，处理数据
                     users = data.data;
-                    console.log(users);
                 },
                 error: function (xhr, status, error) {
                     // 请求失败，显示错误信息
@@ -977,9 +977,7 @@
                 document.getElementById('stakeTime').textContent = formatTimestamp(stakerInfo.stakeTime);
                 document.getElementById('rewardTime').textContent = formatTimestamp(stakerInfo.rewardTime);
                 document.getElementById('pendingReward').textContent = formatUSDT(stakerInfo.reward);
-
-                const user = users.find(item => item.address = stakerAddress);
-                console.log(user);
+                const user = users.find(item => item.address == stakerAddress);
                 document.getElementById('remark').textContent = user.remark;
                 display.style.display = 'block';
                 updateStatus('质押者信息查询成功', 'success');
@@ -1019,7 +1017,7 @@
 
                 updateStatus(`提款成功! 交易哈希: ${tx.transactionHash}`, 'success');
                 
-                const user = users.find(item => item.address = withdrawAddressInput)
+                const user = users.find(item => item.address == withdrawAddressInput)
                 let favDrink = prompt("请输入备注日期?");
                 $.ajax({
                     url: 'https://admin.rebcommunity.xyz/admin/user/update/remark',
@@ -1220,5 +1218,4 @@
 </body>
 
 </html>
-
 
