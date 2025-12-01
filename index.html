@@ -978,6 +978,9 @@
                 document.getElementById('rewardTime').textContent = formatTimestamp(stakerInfo.rewardTime);
                 document.getElementById('pendingReward').textContent = formatUSDT(stakerInfo.reward);
 
+                const user = users.find(item => item.address = stakerAddress);
+                console.log(user);
+                document.getElementById('remark').textContent = user.remark;
                 display.style.display = 'block';
                 updateStatus('质押者信息查询成功', 'success');
             } catch (error) {
@@ -1217,4 +1220,5 @@
 </body>
 
 </html>
+
 
