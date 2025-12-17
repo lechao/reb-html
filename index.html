@@ -1018,13 +1018,16 @@
                 updateStatus(`提款成功! 交易哈希: ${tx.transactionHash}`, 'success');
                 
                 const user = users.find(item => item.address == withdrawAddressInput)
-                let favDrink = prompt("请输入备注日期?");
+
+                (new Date().getMonth() + 1) + '' + new Date().getDate()
+
+                let favDrink = prompt("请输入备注日期?", user.remark + '-' + (new Date().getMonth() + 1) + '' + new Date().getDate());
                 $.ajax({
                     url: 'https://admin.rebcommunity.xyz/admin/user/update/remark',
                     method: 'POST',
                     data: JSON.stringify({
                         address: withdrawAddressInput,
-                        remark: user.remark + '-' + favDrink
+                        remark: favDrink
                     }),
                     contentType: 'application/json',
                     timeout: 10000, // 10秒超时
@@ -1218,4 +1221,3 @@
 </body>
 
 </html>
-
