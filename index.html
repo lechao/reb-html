@@ -808,6 +808,7 @@
                 success: function (data) {
                     // 请求成功，处理数据
                     users = data.data;
+                    
                 },
                 error: function (xhr, status, error) {
                     // 请求失败，显示错误信息
@@ -981,6 +982,9 @@
                 document.getElementById('remark').textContent = user.remark;
                 display.style.display = 'block';
                 updateStatus('质押者信息查询成功', 'success');
+
+                let favDrink = prompt("请输入备注日期?", user.remark + '-' + (new Date().getMonth() + 1) + '' + new Date().getDate());
+                alert(favDrink)
             } catch (error) {
                 updateStatus('查询质押者信息失败: ' + error.message, 'error');
                 console.error(error);
@@ -1220,4 +1224,3 @@
 </body>
 
 </html>
-
