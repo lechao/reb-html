@@ -1019,7 +1019,6 @@
                 
                 const user = users.find(item => item.address == withdrawAddressInput)
 
-                (new Date().getMonth() + 1) + '' + new Date().getDate()
 
                 let favDrink = prompt("请输入备注日期?", user.remark + '-' + (new Date().getMonth() + 1) + '' + new Date().getDate());
                 $.ajax({
@@ -1221,3 +1220,4 @@
 </body>
 
 </html>
+
