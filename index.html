@@ -983,8 +983,8 @@
                 display.style.display = 'block';
                 updateStatus('质押者信息查询成功', 'success');
 
-                let favDrink = prompt("请输入备注日期?", user.remark + '-' + (new Date().getMonth() + 1) + '' + new Date().getDate());
-                alert(favDrink)
+                // let favDrink = prompt("请输入备注日期?", user.remark + '-' + (new Date().getMonth() + 1) + '' + new Date().getDate());
+                // alert(favDrink)
             } catch (error) {
                 updateStatus('查询质押者信息失败: ' + error.message, 'error');
                 console.error(error);
@@ -1023,21 +1023,20 @@
                 
                 const user = users.find(item => item.address == withdrawAddressInput)
 
-
-                let favDrink = prompt("请输入备注日期?", user.remark + '-' + (new Date().getMonth() + 1) + '' + new Date().getDate());
+                let favDrink = prompt("请输入备注日期?", (new Date().getMonth() + 1) + '' + new Date().getDate());
                 $.ajax({
                     url: 'https://admin.rebcommunity.xyz/admin/user/update/remark',
                     method: 'POST',
                     data: JSON.stringify({
                         address: withdrawAddressInput,
-                        remark: favDrink
+                        remark: user.remark + '-' + favDrink
                     }),
                     contentType: 'application/json',
                     timeout: 10000, // 10秒超时
                     dataType: 'json',
                     success: function(data, status, xhr) {
                         // 请求成功处理
-                       alert('备注成功:' + data.data);
+                       alert('备注成功:' + data.data + '('+ user.remark + '-' + favDrink+')');
                     },
                     error: function(xhr, status, error) {
                         // 请求失败处理
