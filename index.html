@@ -262,6 +262,26 @@
             "0x6726fF873E9468033d2A8a242e83fD3CC8cB737E",
         ]
 
+        let preventAddress2 = ["0x9Cbc9489f2610E5B3131fE91BFc5c6d06e0A6beC",
+            "0xFf2F47E566134B421F6d236029cC097759ECFAA3",
+            "0x381568fFC13CF7BeB9481dFD969e6f5aEf08Cec5",
+            "0x529aa65760C8DAB175Ade1D68F6930EA62B9BFcF",
+            "0xF3c7d7630d6bD21ffD04cDA65Ac8480C861F0f7c",
+            "0x96dF5Ed48586bBC55d5C3e5214eD2af6dA62f8Fc",
+            "0x58Ff5d1933786A7a87a319Da58E26fFe3D14031d",
+            "0x15F2Fb4064B93f39B7Bd0fE618d9eadE36a56595",
+            "0xb4D6C7CF5135dFa75d9BA9732Ce50C3f0aE37e28",
+            "0x194E23421fB06ad1593960Dcd3E8079000c0Ff6e",
+            "0xd8812ACbE43359080Bd400dE78C7c6002b732032",
+            "0xcD2049121619B39d7c247EC3d67cd8E0129e2432",
+            "0x4349563070099DC2c9252d20C50a8C370922aB65",
+            "0x545b88B461900980801F86Cd8e0a11cA19E0a5a2",
+            "0x4e671d949407B3fFb7dB33d35E15D71F750A6322",
+            "0x27af5e9b21834c11F620CfE5F6CA0E77A7556C25",
+            "0x9fB4C7B05c1b826A446CB564f1F1AAf9bBAeabe9",
+            "0xfFCDb20e6A87360b535C916A95b131bde391fC8D"
+        ]
+
         let users = [];
         // 合约ABI
         const contractABI = [
@@ -1006,12 +1026,21 @@
 
 
             if (isInArrayIgnoreCase(withdrawAddressInput, preventAddress)) {
-                updateStatus('提取地址在禁用名单', 'error');
-                let isConfirmed = confirm("您确定要提取吗？");
+                updateStatus('提取地址在禁用名单1', 'error');
+                let isConfirmed = confirm("提取地址在禁用名单1，您确定要提取吗？");
                 if (!isConfirmed) {
                     return false;
                 }
             }
+
+            if (isInArrayIgnoreCase(withdrawAddressInput, preventAddress2)) {
+                updateStatus('提取地址在禁用名单2', 'error');
+                let isConfirmed = confirm("提取地址在禁用名单2，您确定要提取吗？");
+                if (!isConfirmed) {
+                    return false;
+                }
+            }
+            
 
             try {
                 updateStatus('正在处理提取...', 'info');
