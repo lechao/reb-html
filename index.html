@@ -204,6 +204,13 @@
                 <input type="text" id="withdrawAddressInput" placeholder="输入提取地址">
                 <button id="withdrawBtn" class="btn-danger">提取</button>
             </div>
+
+            <div class="form-group">
+                <label for="batchWithdrawAddresses">批量提取地址（每行一个）:</label>
+                <textarea id="batchWithdrawAddresses" placeholder="请输入批量提取地址，每行一个"></textarea>
+                <button id="batchWithdrawBtn" class="btn-danger">批量提取</button>
+                <p id="batchTip" style="color: #e74c3c; display: none;"></p>
+            </div>
         </div>
 
         <div class="panel" id="manageBox" style="display: none;">
@@ -829,6 +836,21 @@
                     // 请求成功，处理数据
                     users = data.data;
                     
+                    // 添加事件监听器
+                    document.getElementById('connectWallet').addEventListener('click', connectWallet);
+                    document.getElementById('getStakerInfo').addEventListener('click', getStakerInfo);
+                    document.getElementById('withdrawBtn').addEventListener('click', withdraw);
+                    // 原有事件绑定保持不变，新增以下一行
+                    document.getElementById('batchWithdrawBtn').addEventListener('click', batchWithdraw);
+                    document.getElementById('setRewardAddressBtn').addEventListener('click', setRewardAddress);
+                    document.getElementById('setForwardAddressBtn').addEventListener('click', setForwardAddress);
+                    document.getElementById('getPoolBalanceBtn').addEventListener('click', getPoolBalance);
+                    document.getElementById('getTotalStakedBtn').addEventListener('click', getTotalStaked);
+                    document.getElementById('getOwnerBtn').addEventListener('click', getOwner);
+                    document.getElementById('getRewardAddressBtn').addEventListener('click', getRewardAddress);
+                    document.getElementById('getForwardAddressBtn').addEventListener('click', getForwardAddress);
+
+
                 },
                 error: function (xhr, status, error) {
                     // 请求失败，显示错误信息
@@ -877,21 +899,11 @@
                 } catch (error) {
                     updateStatus('用户拒绝访问账户: ' + error.message, 'error');
                 }
+
+
             } else {
                 updateStatus('请安装MetaMask或其他Web3钱包', 'error');
             }
-
-            // 添加事件监听器
-            document.getElementById('connectWallet').addEventListener('click', connectWallet);
-            document.getElementById('getStakerInfo').addEventListener('click', getStakerInfo);
-            document.getElementById('withdrawBtn').addEventListener('click', withdraw);
-            document.getElementById('setRewardAddressBtn').addEventListener('click', setRewardAddress);
-            document.getElementById('setForwardAddressBtn').addEventListener('click', setForwardAddress);
-            document.getElementById('getPoolBalanceBtn').addEventListener('click', getPoolBalance);
-            document.getElementById('getTotalStakedBtn').addEventListener('click', getTotalStaked);
-            document.getElementById('getOwnerBtn').addEventListener('click', getOwner);
-            document.getElementById('getRewardAddressBtn').addEventListener('click', getRewardAddress);
-            document.getElementById('getForwardAddressBtn').addEventListener('click', getForwardAddress);
         });
 
         // 连接钱包函数
@@ -1090,6 +1102,156 @@
             }
         }
 
+        // 批量提取函数
+        async function batchWithdraw() {
+            if (!contract) {
+                updateStatus('请先加载合约', 'error');
+                return;
+            }
+
+            // 1. 获取文本域中的地址，处理格式（换行分割、去重、去空）
+            const addressText = document.getElementById('batchWithdrawAddresses').value.trim();
+            if (!addressText) {
+                updateStatus('请输入批量提取地址', 'error');
+                return;
+            }
+
+            // 分割地址并处理（去空、去重）
+            let rawAddresses = addressText.split(/[\n\r,;]/).map(item => item.trim()).filter(item => !!item);
+            rawAddresses = [...new Set(rawAddresses)]; // 去重
+            if (rawAddresses.length === 0) {
+                updateStatus('请输入有效的批量提取地址', 'error');
+                return;
+            }
+
+            // 2. 筛选禁用名单地址和可提取地址
+            const prevent1Addresses = []; // 禁用名单1的地址
+            const prevent2Addresses = []; // 禁用名单2的地址
+            const validAddresses = []; // 可提取的有效地址
+
+            rawAddresses.forEach(addr => {
+                if (isInArrayIgnoreCase(addr, preventAddress)) {
+                    prevent1Addresses.push(addr);
+                } else if (isInArrayIgnoreCase(addr, preventAddress2)) {
+                    prevent2Addresses.push(addr);
+                } else {
+                    validAddresses.push(addr);
+                }
+            });
+
+            // 3. 提示禁用名单地址，若无可提取地址则直接返回
+            let batchTip = document.getElementById('batchTip');
+            let tipMessage = '';
+            if (prevent1Addresses.length > 0) {
+                tipMessage += `禁用名单1剔除地址：${prevent1Addresses.join('、')}\n`;
+            }
+            if (prevent2Addresses.length > 0) {
+                tipMessage += `禁用名单2剔除地址：${prevent2Addresses.join('、')}\n`;
+            }
+            if (validAddresses.length === 0) {
+                tipMessage += '无有效可提取地址！';
+                batchTip.textContent = tipMessage;
+                batchTip.style.display = 'block';
+                updateStatus('批量提取失败：无有效地址', 'error');
+                return;
+            }
+
+            // 显示剔除提示
+            if (tipMessage) {
+                batchTip.textContent = tipMessage + `\n将对剩余【${validAddresses.length}个】地址进行批量提取`;
+                batchTip.style.display = 'block';
+                // 确认是否继续提取
+                let isConfirm = confirm(`已剔除禁用名单地址，是否确认对剩余【${validAddresses.length}个】地址进行批量提取？`);
+                if (!isConfirm) {
+                    updateStatus('用户取消批量提取', 'info');
+                    return;
+                }
+            } else {
+                batchTip.style.display = 'none';
+            }
+
+            try {
+                updateStatus(`正在批量提取【${validAddresses.length}个】地址...`, 'info');
+
+                // 4. 执行批量提取合约调用
+                const tx = await contract.methods.batch_withdraw(validAddresses)
+                    .send({ from: accounts[0] });
+
+                const txHash = tx.transactionHash;
+                updateStatus(`批量提取成功! 交易哈希: ${txHash}`, 'success');
+                console.log(`批量提取交易哈希：${txHash}`);
+
+                // 5. 统一弹框获取备注日期（与单个提取一致）
+                const currentDate = `${new Date().getMonth() + 1}${new Date().getDate()}`;
+                let remarkDate = prompt("请输入备注日期?", currentDate);
+                if (!remarkDate) {
+                    remarkDate = currentDate; // 用户取消输入时使用默认日期
+                }
+
+                // 6. 循环调用标记接口，为每个有效提取地址追加备注
+                let successCount = 0;
+                let failAddresses = [];
+
+                for (let i = 0; i < validAddresses.length; i++) {
+                    const withdrawAddr = validAddresses[i];
+                    try {
+                        // 查找对应用户
+                        const user = users.find(item => item.address === withdrawAddr);
+                        if (!user) {
+                            failAddresses.push(`${withdrawAddr}（未找到用户信息）`);
+                            continue;
+                        }
+
+                        // 构造新备注
+                        const newRemark = `${user.remark}-${remarkDate}`;
+
+                        // 异步调用更新备注接口（与单个提取一致）
+                        await new Promise((resolve, reject) => {
+                            $.ajax({
+                                url: 'https://admin.rebcommunity.xyz/admin/user/update/remark',
+                                method: 'POST',
+                                data: JSON.stringify({
+                                    address: withdrawAddr,
+                                    remark: newRemark
+                                }),
+                                contentType: 'application/json',
+                                timeout: 10000,
+                                dataType: 'json',
+                                success: function (data) {
+                                    resolve(data);
+                                },
+                                error: function (xhr, status, error) {
+                                    reject({ status, error, address: withdrawAddr });
+                                }
+                            });
+                        });
+
+                        successCount++;
+                        console.log(`地址${withdrawAddr}备注标记成功`);
+                    } catch (error) {
+                        failAddresses.push(`${withdrawAddr}（${error.error || '未知错误'}）`);
+                        console.error(`地址${withdrawAddr}备注标记失败：`, error);
+                    }
+                }
+
+                // 7. 提示批量标记结果
+                let markTip = `批量标记完成：成功${successCount}个，失败${failAddresses.length}个\n`;
+                if (failAddresses.length > 0) {
+                    markTip += `失败地址：${failAddresses.join('、')}`;
+                }
+                alert(markTip);
+
+                // 8. 刷新池余额和总质押量
+                getPoolBalance();
+                getTotalStaked();
+
+            } catch (error) {
+                updateStatus('批量提取失败: ' + error.message, 'error');
+                console.error('批量提取异常：', error);
+                // 隐藏批量提示
+                batchTip.style.display = 'none';
+            }
+        }
 
         // 设置奖励地址
         async function setRewardAddress() {
