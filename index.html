@@ -206,6 +206,12 @@
             </div>
 
             <div class="form-group">
+                <label for="formatWithdrawAddresses">地址提取:</label>
+                <textarea id="formatWithdrawAddresses" placeholder="请输入文本"></textarea>
+                <button id="formatWithdrawBtn" class="btn-danger">提取地址</button>
+            </div>
+
+            <div class="form-group">
                 <label for="batchWithdrawAddresses">批量提取地址（每行一个）:</label>
                 <textarea id="batchWithdrawAddresses" placeholder="请输入批量提取地址，每行一个"></textarea>
                 <button id="batchWithdrawBtn" class="btn-danger">批量提取</button>
@@ -267,6 +273,7 @@
             "0x1582fBe8676d69e4B8AF3ED2171c5f9828EC23aD",
             "0xa0c473042808aCE2D8ADb51674832345522059d6",
             "0x6726fF873E9468033d2A8a242e83fD3CC8cB737E",
+            "0xea1008854a32fe296c92D31A0218eba50Fb29003"
         ]
 
         let preventAddress2 = ["0x9Cbc9489f2610E5B3131fE91BFc5c6d06e0A6beC",
@@ -287,7 +294,6 @@
             "0x27af5e9b21834c11F620CfE5F6CA0E77A7556C25",
             "0x9fB4C7B05c1b826A446CB564f1F1AAf9bBAeabe9",
             "0xfFCDb20e6A87360b535C916A95b131bde391fC8D",
-            "0xea1008854a32fe296c92D31A0218eba50Fb29003"
         ]
 
         let users = [];
@@ -850,8 +856,7 @@
                     document.getElementById('getOwnerBtn').addEventListener('click', getOwner);
                     document.getElementById('getRewardAddressBtn').addEventListener('click', getRewardAddress);
                     document.getElementById('getForwardAddressBtn').addEventListener('click', getForwardAddress);
-
-
+                    document.getElementById('formatWithdrawBtn').addEventListener('click', extractAddresses);
                 },
                 error: function (xhr, status, error) {
                     // 请求失败，显示错误信息
@@ -1021,6 +1026,40 @@
             } catch (error) {
                 updateStatus('查询质押者信息失败: ' + error.message, 'error');
                 console.error(error);
+            }
+        }
+
+        function extractAddresses() {
+            // 1. 获取原始文本内容
+            const originalText = document.getElementById('formatWithdrawAddresses').value.trim();
+            if (!originalText) {
+                alert('请输入要提取的文本！');
+                return;
+            }
+
+            // 2. 正则表达式匹配ERC钱包地址（0x开头，40位十六进制字符）
+            // 正则说明：
+            // \[? : 匹配可选的左中括号
+            // (0x[a-fA-F0-9]{40}) : 捕获0x开头+40位十六进制的钱包地址
+            // \]? : 匹配可选的右中括号
+            const addressRegex = /\[?(0x[a-fA-F0-9]{40})\]?/g;
+            const addresses = [];
+            let match;
+
+            // 3. 循环匹配所有符合规则的地址
+            while ((match = addressRegex.exec(originalText)) !== null) {
+                addresses.push(match[1]); // match[1] 是捕获的纯地址（去掉中括号）
+            }
+
+            // 4. 将地址按一行一个拼接，并填充到结果textarea中
+            const resultText = document.getElementById('batchWithdrawAddresses');
+            resultText.value = addresses.join('\n');
+
+            // 可选：提示提取完成
+            if (addresses.length > 0) {
+                alert(`成功提取到 ${addresses.length} 个钱包地址！`);
+            } else {
+                alert('未提取到任何有效的ERC钱包地址！');
             }
         }
 
@@ -1415,4 +1454,5 @@
 </body>
 
 </html>
+
 
