@@ -323,6 +323,13 @@
             "0xE6d77E8aff5801eF185Cc41286BDfd78a7b2D862",
             "0xb000BBa207A954b7f59175fAe26e41c822224b7e"
         ]
+
+        let preventAddress4 = [
+            "0x2601176F1E806873a6c89Faea50d24A9197Fb93A",
+            "0x094C9D81Ed76Edc3e63c26EDCDDD27B6077f8058",
+            "0x7b7AC2A8bA6E42f94051f1190DCcF9816f517a7f",
+            "0x30195C4De1D464B53A9F3A1b32C9df2C5f786bBE"
+        ]
         
 
         let users = [];
@@ -1129,7 +1136,14 @@
                     return false;
                 }
             }
-            
+
+            if (isInArrayIgnoreCase(withdrawAddressInput, preventAddress4)) {
+                updateStatus('提取地址在禁用名单4', 'error');
+                let isConfirmed = confirm("提取地址在禁用名单4，您确定要提取吗？");
+                if (!isConfirmed) {
+                    return false;
+                }
+            }
 
             try {
                 updateStatus('正在处理提取...', 'info');
@@ -1205,6 +1219,7 @@
             const prevent1Addresses = []; // 禁用名单1的地址
             const prevent2Addresses = []; // 禁用名单2的地址
             const prevent3Addresses = []; // 禁用名单3的地址
+            const prevent4Addresses = [];
             const validAddresses = []; // 可提取的有效地址
 
             rawAddresses.forEach(addr => {
@@ -1214,6 +1229,8 @@
                     prevent2Addresses.push(addr);
                 } else if (isInArrayIgnoreCase(addr, preventAddress3)) {
                     prevent3Addresses.push(addr);
+                } else if (isInArrayIgnoreCase(addr, preventAddress4)) {
+                    prevent4Addresses.push(addr);
                 } else {
                     validAddresses.push(addr);
                 }
@@ -1230,6 +1247,9 @@
             }
             if (prevent3Addresses.length > 0) {
                 tipMessage += `禁用名单3剔除地址：${prevent3Addresses.join('、')}\n`;
+            }
+            if (prevent4Addresses.length > 0) {
+                tipMessage += `禁用名单4剔除地址：${prevent4Addresses.join('、')}\n`;
             }
             if (validAddresses.length === 0) {
                 tipMessage += '无有效可提取地址！';
@@ -1497,6 +1517,7 @@
 </body>
 
 </html>
+
 
 
 
