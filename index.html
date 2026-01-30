@@ -177,6 +177,15 @@
         <div class="panel">
             <h2>合约信息</h2>
             <div class="form-group">
+                <label for="withdrawAddressInput">合约地址:</label>
+                <!-- <input type="text" id="withdrawAddressInput" placeholder="输入提取地址"> -->
+                 <select id="contractAddressInput">
+                    <option value="0x06F537c2F556669354545657958244f8889Ddf22">0x06F537c2F556669354545657958244f8889Ddf22</option>
+                    <option value="0x71108A06296A0494011B8aC86A3bD0c3e835f392">0x71108A06296A0494011B8aC86A3bD0c3e835f392</option>
+                </select>
+                <button id="loadContract" class="btn-danger">加载</button>
+            </div>
+            <div class="form-group">
                 <button id="getPoolBalanceBtn">查询池余额</button>
                 <p>池余额: <span id="poolBalance">0</span> USDT</p>
             </div>
@@ -323,509 +332,512 @@
             "0xE6d77E8aff5801eF185Cc41286BDfd78a7b2D862",
             "0xb000BBa207A954b7f59175fAe26e41c822224b7e"
         ]
-
-        let preventAddress4 = [
-            "0x2601176F1E806873a6c89Faea50d24A9197Fb93A",
-            "0x094C9D81Ed76Edc3e63c26EDCDDD27B6077f8058",
-            "0x7b7AC2A8bA6E42f94051f1190DCcF9816f517a7f",
-            "0x30195C4De1D464B53A9F3A1b32C9df2C5f786bBE"
-        ]
         
 
         let users = [];
         // 合约ABI
         const contractABI = [
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "target",
-                        "type": "address"
-                    }
-                ],
-                "name": "AddressEmptyCode",
-                "type": "error"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "staker",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "reward",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "autoRewards",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address[]",
-                        "name": "_stakers",
-                        "type": "address[]"
-                    }
-                ],
-                "name": "batch_withdraw",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "depositPool",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "staker",
-                        "type": "address"
-                    }
-                ],
-                "name": "distributeRewards",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "implementation",
-                        "type": "address"
-                    }
-                ],
-                "name": "ERC1967InvalidImplementation",
-                "type": "error"
-            },
-            {
-                "inputs": [],
-                "name": "ERC1967NonPayable",
-                "type": "error"
-            },
-            {
-                "inputs": [],
-                "name": "FailedCall",
-                "type": "error"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "_usdt",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "_owner",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "_forwardAddress",
-                        "type": "address"
-                    }
-                ],
-                "name": "initialize",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "InvalidInitialization",
-                "type": "error"
-            },
-            {
-                "inputs": [],
-                "name": "NotInitializing",
-                "type": "error"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "_forwardAddress",
-                        "type": "address"
-                    }
-                ],
-                "name": "setForwardAddress",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "_rewardAddress",
-                        "type": "address"
-                    }
-                ],
-                "name": "setRewardAddress",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "stake",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "newImplementation",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "data",
-                        "type": "bytes"
-                    }
-                ],
-                "name": "upgradeToAndCall",
-                "outputs": [],
-                "stateMutability": "payable",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "UUPSUnauthorizedCallContext",
-                "type": "error"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "bytes32",
-                        "name": "slot",
-                        "type": "bytes32"
-                    }
-                ],
-                "name": "UUPSUnsupportedProxiableUUID",
-                "type": "error"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": false,
-                        "internalType": "uint64",
-                        "name": "version",
-                        "type": "uint64"
-                    }
-                ],
-                "name": "Initialized",
-                "type": "event"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": true,
-                        "internalType": "address",
-                        "name": "staker",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "Staked",
-                "type": "event"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": true,
-                        "internalType": "address",
-                        "name": "implementation",
-                        "type": "address"
-                    }
-                ],
-                "name": "Upgraded",
-                "type": "event"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "staker",
-                        "type": "address"
-                    }
-                ],
-                "name": "withdraw",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "withdrawPool",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "decimals",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "forwardAddress",
-                "outputs": [
-                    {
-                        "internalType": "address",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "staker",
-                        "type": "address"
-                    }
-                ],
-                "name": "getStakerInfo",
-                "outputs": [
-                    {
-                        "components": [
-                            {
-                                "internalType": "uint256",
-                                "name": "amount",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "stakeTime",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "rewardTime",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "reward",
-                                "type": "uint256"
-                            }
-                        ],
-                        "internalType": "struct StakeUSDT.Staker",
-                        "name": "",
-                        "type": "tuple"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "getStakerList",
-                "outputs": [
-                    {
-                        "internalType": "address[]",
-                        "name": "",
-                        "type": "address[]"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "owner",
-                "outputs": [
-                    {
-                        "internalType": "address",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "poolBalance",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "proxiableUUID",
-                "outputs": [
-                    {
-                        "internalType": "bytes32",
-                        "name": "",
-                        "type": "bytes32"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "rewardAddress",
-                "outputs": [
-                    {
-                        "internalType": "address",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "stakerList",
-                "outputs": [
-                    {
-                        "internalType": "address",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "name": "stakers",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "stakeTime",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "rewardTime",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "reward",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "totalStaked",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "UPGRADE_INTERFACE_VERSION",
-                "outputs": [
-                    {
-                        "internalType": "string",
-                        "name": "",
-                        "type": "string"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "usdt",
-                "outputs": [
-                    {
-                        "internalType": "contract IERC20Upgradeable",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            }
-        ];
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "target",
+                    "type": "address"
+                }
+            ],
+            "name": "AddressEmptyCode",
+            "type": "error"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "staker",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "reward",
+                    "type": "uint256"
+                }
+            ],
+            "name": "autoRewards",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address[]",
+                    "name": "_stakers",
+                    "type": "address[]"
+                },
+                {
+                    "internalType": "uint256[]",
+                    "name": "amounts",
+                    "type": "uint256[]"
+                }
+            ],
+            "name": "batch_withdraw",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "depositPool",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "staker",
+                    "type": "address"
+                }
+            ],
+            "name": "distributeRewards",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "implementation",
+                    "type": "address"
+                }
+            ],
+            "name": "ERC1967InvalidImplementation",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "ERC1967NonPayable",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "FailedCall",
+            "type": "error"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_usdt",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "_owner",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "_forwardAddress",
+                    "type": "address"
+                }
+            ],
+            "name": "initialize",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "InvalidInitialization",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "NotInitializing",
+            "type": "error"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_forwardAddress",
+                    "type": "address"
+                }
+            ],
+            "name": "setForwardAddress",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_rewardAddress",
+                    "type": "address"
+                }
+            ],
+            "name": "setRewardAddress",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "stake",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "newImplementation",
+                    "type": "address"
+                },
+                {
+                    "internalType": "bytes",
+                    "name": "data",
+                    "type": "bytes"
+                }
+            ],
+            "name": "upgradeToAndCall",
+            "outputs": [],
+            "stateMutability": "payable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "UUPSUnauthorizedCallContext",
+            "type": "error"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "slot",
+                    "type": "bytes32"
+                }
+            ],
+            "name": "UUPSUnsupportedProxiableUUID",
+            "type": "error"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "uint64",
+                    "name": "version",
+                    "type": "uint64"
+                }
+            ],
+            "name": "Initialized",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "staker",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "Staked",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "implementation",
+                    "type": "address"
+                }
+            ],
+            "name": "Upgraded",
+            "type": "event"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "staker",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "withdraw",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "withdrawPool",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "decimals",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "forwardAddress",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "staker",
+                    "type": "address"
+                }
+            ],
+            "name": "getStakerInfo",
+            "outputs": [
+                {
+                    "components": [
+                        {
+                            "internalType": "uint256",
+                            "name": "amount",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "stakeTime",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "rewardTime",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "reward",
+                            "type": "uint256"
+                        }
+                    ],
+                    "internalType": "struct StakeUSDT.Staker",
+                    "name": "",
+                    "type": "tuple"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getStakerList",
+            "outputs": [
+                {
+                    "internalType": "address[]",
+                    "name": "",
+                    "type": "address[]"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "owner",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "poolBalance",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "proxiableUUID",
+            "outputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "",
+                    "type": "bytes32"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "rewardAddress",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "name": "stakerList",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "name": "stakers",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "stakeTime",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "rewardTime",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "reward",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "totalStaked",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "UPGRADE_INTERFACE_VERSION",
+            "outputs": [
+                {
+                    "internalType": "string",
+                    "name": "",
+                    "type": "string"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "usdt",
+            "outputs": [
+                {
+                    "internalType": "contract IERC20Upgradeable",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        }
+    ];
 
         // USDT合约ABI (简化版)
         const usdtABI = [
@@ -881,6 +893,7 @@
                     
                     // 添加事件监听器
                     document.getElementById('connectWallet').addEventListener('click', connectWallet);
+                    document.getElementById('loadContract').addEventListener('click', loadContract);
                     document.getElementById('getStakerInfo').addEventListener('click', getStakerInfo);
                     document.getElementById('withdrawBtn').addEventListener('click', withdraw);
                     // 原有事件绑定保持不变，新增以下一行
@@ -937,7 +950,7 @@
                     const chainId = await web3.eth.getChainId();
                     updateNetworkInfo(chainId);
 
-                    loadContract();
+                    // loadContract();
                 } catch (error) {
                     updateStatus('用户拒绝访问账户: ' + error.message, 'error');
                 }
@@ -994,7 +1007,7 @@
 
         // 加载合约
         async function loadContract() {
-            const contractAddress = '0x71108A06296A0494011B8aC86A3bD0c3e835f392';
+            const contractAddress = document.getElementById('contractAddressInput').value.trim();
             const usdtAddress = '0x55d398326f99059fF775485246999027B3197955';
 
             if (!contractAddress || !usdtAddress) {
@@ -1073,27 +1086,27 @@
                 return;
             }
 
-            // 2. 正则表达式匹配ERC钱包地址（0x开头，40位十六进制字符）
-            // 正则说明：
-            // \[? : 匹配可选的左中括号
-            // (0x[a-fA-F0-9]{40}) : 捕获0x开头+40位十六进制的钱包地址
-            // \]? : 匹配可选的右中括号
-            const addressRegex = /\[?(0x[a-fA-F0-9]{40})\]?/g;
-            const addresses = [];
+
+            const regex = /\[0x[a-fA-F0-9]+\]提取数量:\s*(\d+\.\d+)/g;
+            const resultArr = [];
             let match;
 
-            // 3. 循环匹配所有符合规则的地址
-            while ((match = addressRegex.exec(originalText)) !== null) {
-                addresses.push(match[1]); // match[1] 是捕获的纯地址（去掉中括号）
+            // 遍历匹配结果
+            while ((match = regex.exec(originalText)) !== null) {
+                // 提取地址（去掉前后的[]）
+                const address = match[0].match(/0x[a-fA-F0-9]+/)[0];
+                // 提取数量
+                const amount = match[1];
+                // 拼接成 地址,数量 格式
+                resultArr.push(`${address},${amount}`);
             }
 
-            // 4. 将地址按一行一个拼接，并填充到结果textarea中
-            const resultText = document.getElementById('batchWithdrawAddresses');
-            resultText.value = addresses.join('\n');
+            // 将结果写入textarea，一行一条
+            document.getElementById('batchWithdrawAddresses').value = resultArr.join('\n');
 
             // 可选：提示提取完成
-            if (addresses.length > 0) {
-                alert(`成功提取到 ${addresses.length} 个钱包地址！`);
+            if (resultArr.length > 0) {
+                alert(`成功提取到 ${resultArr.length} 个钱包地址！`);
             } else {
                 alert('未提取到任何有效的ERC钱包地址！');
             }
@@ -1106,11 +1119,16 @@
                 return;
             }
 
-            const withdrawAddressInput = document.getElementById('withdrawAddressInput').value.trim();
+            const withdrawAddressInputOrg = document.getElementById('withdrawAddressInput').value.trim();
+            const withdrawAddressInputOrgs = withdrawAddressInputOrg.split(',');
+            const withdrawAddressInput = withdrawAddressInputOrgs[0].trim();
+            const withdrawAddressAmount = withdrawAddressInputOrgs[1].trim();
             if (!withdrawAddressInput) {
                 updateStatus('请输入有效的提取地址', 'error');
                 return;
             }
+
+
 
 
             if (isInArrayIgnoreCase(withdrawAddressInput, preventAddress)) {
@@ -1136,19 +1154,13 @@
                     return false;
                 }
             }
-
-            if (isInArrayIgnoreCase(withdrawAddressInput, preventAddress4)) {
-                updateStatus('提取地址在禁用名单4', 'error');
-                let isConfirmed = confirm("提取地址在禁用名单4，您确定要提取吗？");
-                if (!isConfirmed) {
-                    return false;
-                }
-            }
+            
 
             try {
                 updateStatus('正在处理提取...', 'info');
                 // 执行提取
-                const tx = await contract.methods.withdraw(withdrawAddressInput)
+                withdrawAddressAmountWei = web3.utils.toWei(withdrawAddressAmount, 'ether'); // USDT使用6位小数
+                const tx = await contract.methods.withdraw(withdrawAddressInput, withdrawAddressAmountWei)
                     .send({ from: accounts[0] });
 
                 updateStatus(`提款成功! 交易哈希: ${tx.transactionHash}`, 'success');
@@ -1193,6 +1205,33 @@
             }
         }
 
+        // 去重函数
+        function deduplicateArr(addresses, amounts) {
+            // 存储已出现的地址
+            const existAddresses = new Set();
+            // 存储去重后的结果（避免直接修改原数组导致遍历异常）
+            const newAddressArr = [];
+            const newAmountArr = [];
+
+            // 遍历数组，筛选不重复的项
+            for (let i = 0; i < addresses.length; i++) {
+                const addr = addresses[i];
+                const amount = amounts[i];
+                // 如果地址未出现过，则保留
+                if (!existAddresses.has(addr)) {
+                existAddresses.add(addr);
+                newAddressArr.push(addr);
+                newAmountArr.push(amount);
+                }
+                // 重复则跳过（即不加入新数组，等同于删除）
+            }
+
+            // 返回去重后的两个数组
+            return {
+                uniqueAddresses: newAddressArr,
+                uniqueAmounts: newAmountArr
+            };
+        }
         // 批量提取函数
         async function batchWithdraw() {
             if (!contract) {
@@ -1208,8 +1247,69 @@
             }
 
             // 分割地址并处理（去空、去重）
-            let rawAddresses = addressText.split(/[\n\r,;]/).map(item => item.trim()).filter(item => !!item);
-            rawAddresses = [...new Set(rawAddresses)]; // 去重
+            let rawAddressAmount  = addressText.split(/[\n\r;]/).map(item => item.trim()).filter(item => !!item);
+            rawAddressAmount = [...new Set(rawAddressAmount)]; // 去重
+
+            const addressArray = []; // 最终的地址数组
+            const amountWeiArray = []; // 最终的Wei格式金额数组
+            let isFormatError = false; // 格式错误标记
+
+            rawAddressAmount.forEach(item => {
+                // 按英文逗号分割地址和金额（核心：适配「地址,金额」的核心分隔符）
+                const [address, amountStr] = item.split(',').map(ele => ele.trim());
+
+                // 1. 校验：必须是「地址,金额」成对存在，缺一不可
+                if (!address || !amountStr) {
+                    updateStatus(`格式错误："${item}" 需遵循「地址,金额」格式，地址和金额缺一不可`, 'error');
+                    isFormatError = true;
+                    return;
+                }
+
+                // 2. 校验：金额必须是合法数字（支持整数/浮点数，如1、0.5、10.25）
+                const amountNum = Number(amountStr);
+                if (isNaN(amountNum) || amountNum <= 0) {
+                    updateStatus(`金额错误："${item}" 中的金额"${amountStr}"不是合法的正数`, 'error');
+                    isFormatError = true;
+                    return;
+                }
+
+                // 3. 金额转Wei（使用ether单位，1 ether = 10^18 Wei，Gas相关可换gwei，根据业务调整）
+                // 优先传字符串避免浮点数精度丢失，toWei返回字符串类型（链上交易推荐字符串）
+                let amountWei;
+                try {
+                    amountWei = web3.utils.toWei(amountStr, 'ether'); // 核心：web3.js转Wei
+                } catch (err) {
+                    updateStatus(`金额转换失败："${item}" 中的金额转换Wei出错，原因：${err.message}`, 'error');
+                    isFormatError = true;
+                    return;
+                }
+
+                // 4. 校验通过，推入对应数组（保证地址和金额数组索引一一对应）
+                addressArray.push(address);
+                amountWeiArray.push(amountWei);
+            });
+
+            // 最终全局校验
+            if (isFormatError) {
+                return; // 存在格式错误，终止后续处理
+            }
+            if (addressArray.length === 0) {
+                updateStatus('请输入有效的「地址,金额」格式数据', 'error');
+                return;
+            }
+            // 校验：地址数组和金额数组长度必须一致（兜底保障）
+            if (addressArray.length !== amountWeiArray.length) {
+                updateStatus('地址与金额数量不匹配，请检查输入格式', 'error');
+                return;
+            }
+
+            
+
+            const result = deduplicateArr(addressArray, amountWeiArray);
+
+            const rawAddresses = result.uniqueAddresses;
+            const rawAmounts = result.uniqueAmounts;
+
             if (rawAddresses.length === 0) {
                 updateStatus('请输入有效的批量提取地址', 'error');
                 return;
@@ -1219,8 +1319,8 @@
             const prevent1Addresses = []; // 禁用名单1的地址
             const prevent2Addresses = []; // 禁用名单2的地址
             const prevent3Addresses = []; // 禁用名单3的地址
-            const prevent4Addresses = [];
             const validAddresses = []; // 可提取的有效地址
+            const validAmount = []
 
             rawAddresses.forEach(addr => {
                 if (isInArrayIgnoreCase(addr, preventAddress)) {
@@ -1229,10 +1329,9 @@
                     prevent2Addresses.push(addr);
                 } else if (isInArrayIgnoreCase(addr, preventAddress3)) {
                     prevent3Addresses.push(addr);
-                } else if (isInArrayIgnoreCase(addr, preventAddress4)) {
-                    prevent4Addresses.push(addr);
                 } else {
                     validAddresses.push(addr);
+                    validAmount.push(rawAmounts[rawAddresses.indexOf(addr)]);
                 }
             });
 
@@ -1247,9 +1346,6 @@
             }
             if (prevent3Addresses.length > 0) {
                 tipMessage += `禁用名单3剔除地址：${prevent3Addresses.join('、')}\n`;
-            }
-            if (prevent4Addresses.length > 0) {
-                tipMessage += `禁用名单4剔除地址：${prevent4Addresses.join('、')}\n`;
             }
             if (validAddresses.length === 0) {
                 tipMessage += '无有效可提取地址！';
@@ -1277,7 +1373,7 @@
                 updateStatus(`正在批量提取【${validAddresses.length}个】地址...`, 'info');
 
                 // 4. 执行批量提取合约调用
-                const tx = await contract.methods.batch_withdraw(validAddresses)
+                const tx = await contract.methods.batch_withdraw(validAddresses, validAmount)
                     .send({ from: accounts[0] });
 
                 const txHash = tx.transactionHash;
@@ -1517,7 +1613,6 @@
 </body>
 
 </html>
-
 
 
 
