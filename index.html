@@ -1168,7 +1168,7 @@
             try {
                 updateStatus('正在查询质押者信息...', 'info');
 
-                const stakerInfo = await contract.methods.getStakerInfo(stakerAddress).call();
+                const stakerInfo = await contract.methods.stakers(stakerAddress).call();
                 const display = document.getElementById('stakerInfoDisplay');
 
                 document.getElementById('stakeAmount').textContent = formatUSDT(stakerInfo.amount);
@@ -1790,6 +1790,7 @@
 </body>
 
 </html>
+
 
 
 
