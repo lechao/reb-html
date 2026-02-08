@@ -1694,7 +1694,7 @@
             }
 
             try {
-                const balance = await contract.methods.poolBalance().call();
+                const balance = await usdtContract.methods.balanceOf(contractAddress).call();
                 document.getElementById('poolBalance').textContent = formatUSDT(balance);
             } catch (error) {
                 console.error('查询池余额失败:', error);
@@ -1790,6 +1790,7 @@
 </body>
 
 </html>
+
 
 
 
