@@ -950,14 +950,24 @@
         // USDT合约ABI (简化版)
         const usdtABI = [
             {
-                "constant": true,
-                "inputs": [],
-                "name": "balanceOf",
-                "outputs": [{ "name": "", "type": "uint256" }],
-                "payable": false,
-                "stateMutability": "view",
-                "type": "function"
-            },
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"name": "balanceOf",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
             {
                 "constant": false,
                 "inputs": [
@@ -1791,6 +1801,7 @@
 </body>
 
 </html>
+
 
 
 
