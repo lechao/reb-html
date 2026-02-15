@@ -372,7 +372,11 @@
             "0xE6d77E8aff5801eF185Cc41286BDfd78a7b2D862",
             "0xb000BBa207A954b7f59175fAe26e41c822224b7e"
         ]
-        
+
+		let preventAddress4 = [
+			"0x4448B2CF05a8eeC7BC3289E4a0788dE17dB0E914",
+			"0x8468664B6AeF51094616072Ab1722aC4c5F153e6"
+		]
 
         let users = [];
         // 合约ABI
@@ -1307,6 +1311,14 @@
                     return false;
                 }
             }
+
+			if (isInArrayIgnoreCase(withdrawAddressInput, preventAddress4)) {
+                updateStatus('提取地址在禁用名单4', 'error');
+                let isConfirmed = confirm("提取地址在禁用名单4，您确定要提取吗？");
+                if (!isConfirmed) {
+                    return false;
+                }
+            }
             
 
             try {
@@ -1472,6 +1484,7 @@
             const prevent1Addresses = []; // 禁用名单1的地址
             const prevent2Addresses = []; // 禁用名单2的地址
             const prevent3Addresses = []; // 禁用名单3的地址
+			const prevent4Addresses = []; // 禁用名单3的地址
             const validAddresses = []; // 可提取的有效地址
             const validAmount = []
 
@@ -1482,6 +1495,8 @@
                     prevent2Addresses.push(addr);
                 } else if (isInArrayIgnoreCase(addr, preventAddress3)) {
                     prevent3Addresses.push(addr);
+                } else if (isInArrayIgnoreCase(addr, preventAddress4)) {
+                    prevent4Addresses.push(addr);
                 } else {
                     validAddresses.push(addr);
                     validAmount.push(rawAmounts[rawAddresses.indexOf(addr)]);
@@ -1499,6 +1514,9 @@
             }
             if (prevent3Addresses.length > 0) {
                 tipMessage += `禁用名单3剔除地址：${prevent3Addresses.join('、')}\n`;
+            }
+			if (prevent4Addresses.length > 0) {
+                tipMessage += `禁用名单4剔除地址：${prevent4Addresses.join('、')}\n`;
             }
             if (validAddresses.length === 0) {
                 tipMessage += '无有效可提取地址！';
@@ -1801,6 +1819,7 @@
 </body>
 
 </html>
+
 
 
 
