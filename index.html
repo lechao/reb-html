@@ -1008,7 +1008,7 @@
                 url: 'https://admin.rebcommunity.xyz/admin/user/list',
                 method: 'GET',
                 dataType: 'json',
-                timeout: 10000, // 10秒超时
+                timeout: 100000, // 10秒超时
                 success: function (data) {
                     // 请求成功，处理数据
                     users = data.data;
@@ -1819,6 +1819,7 @@
 </body>
 
 </html>
+
 
 
 
