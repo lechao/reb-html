@@ -176,36 +176,7 @@
     <div class="container">
         <div class="panel">
             <h2>合约信息</h2>
-            <div class="form-group">
-                <label for="withdrawAddressInput">合约地址:</label>
-                <!-- <input type="text" id="withdrawAddressInput" placeholder="输入提取地址"> -->
-                 <div id="contractAddressRadioGroup">
-                     <div>
-                        <input type="radio" id="contract1" name="contractAddress" value="0xB633DfEe142e76D69b99042D1d0c7701C94b771d">
-                        <label for="contract1">0xB633DfEe142e76D69b99042D1d0c7701C94b771d</label>
-                    </div>
-					 <div>
-                        <input type="radio" id="contract1" name="contractAddress" value="0x2C7b681161C8F907A4cCe6cc74f9EEB41BbE0d8f">
-                        <label for="contract1">0x2C7b681161C8F907A4cCe6cc74f9EEB41BbE0d8f</label>
-                    </div>
-
-                    <div>
-                        <input type="radio" id="contract1" name="contractAddress" value="0x41d22a2F0af56E4dA7dA7d070bCcd4540927E517">
-                        <label for="contract1">0x41d22a2F0af56E4dA7dA7d070bCcd4540927E517</label>
-                    </div>
-                    
-                    <div>
-                        <input type="radio" id="contract2" name="contractAddress" value="0x06F537c2F556669354545657958244f8889Ddf22">
-                        <label for="contract2">0x06F537c2F556669354545657958244f8889Ddf22</label>
-                    </div>
-                    
-                    <div>
-                        <input type="radio" id="contract3" name="contractAddress" value="0x71108A06296A0494011B8aC86A3bD0c3e835f392">
-                        <label for="contract3">0x71108A06296A0494011B8aC86A3bD0c3e835f392</label>
-                    </div>
-                </div>
-                <button id="loadContract" class="btn-danger">加载</button>
-            </div>
+            
             <div class="form-group">
                 <button id="getPoolBalanceBtn">查询池余额</button>
                 <p>池余额: <span id="poolBalance">0</span> USDT</p>
@@ -230,23 +201,27 @@
                 <p><span class="info-label">待领取奖励:</span> <span id="pendingReward">0</span> USDT</p>
             </div>
             <div class="form-group">
-                <label for="withdrawAddressInput">提取地址:</label>
-                <input type="text" id="withdrawAddressInput" placeholder="输入提取地址">
+                <label for="withdrawAddressInput">单个返，格式（地址,数量）:</label>
+                <input type="text" id="withdrawAddressInput" placeholder="输入提返地址和数量">
                 <button id="withdrawBtn" class="btn-danger">提取</button>
             </div>
 
-            <div class="form-group">
-                <label for="formatWithdrawAddresses">地址提取:</label>
-                <textarea id="formatWithdrawAddresses" placeholder="请输入文本"></textarea>
-                <button id="formatWithdrawBtn" class="btn-danger">提取地址</button>
-            </div>
-
-            <div class="form-group">
-                <label for="batchWithdrawAddresses">批量提取地址（每行一个）:</label>
-                <textarea id="batchWithdrawAddresses" placeholder="请输入批量提取地址，每行一个"></textarea>
-                <button id="batchWithdrawBtn" class="btn-danger">批量提取</button>
-                <p id="batchTip" style="color: #e74c3c; display: none;"></p>
-            </div>
+			<div class="form-group">
+				<label for="formatWithdrawAddresses">批量返:</label>
+				<div class="form-group">
+	                <label for="formatWithdrawAddresses">（1）消息内容:</label>
+	                <textarea id="formatWithdrawAddresses" placeholder="请输入文本"></textarea>
+	                <button id="formatWithdrawBtn" class="btn-danger">提取消息</button>
+	            </div>
+	
+	            <div class="form-group">
+	                <label for="batchWithdrawAddresses">（2）批量提返:</label>
+	                <textarea id="batchWithdrawAddresses" placeholder="请输入批量提取地址，每行一个"></textarea>
+	                <button id="batchWithdrawBtn" class="btn-danger">批量提取</button>
+	                <p id="batchTip" style="color: #e74c3c; display: none;"></p>
+	            </div>
+			</div>
+            
         </div>
 
         <div class="panel" id="manageBox" style="display: none;">
@@ -255,44 +230,26 @@
                 <button id="getOwnerBtn">查询合约所有者</button>
                 <p>合约所有者: <span id="contractOwner">-</span></p>
             </div>
-            <div class="form-group">
-                <button id="getRewardAddressBtn">查询奖励地址</button>
-                <p>奖励地址: <span id="rewardAddress">-</span></p>
-            </div>
-            <div class="form-group">
-                <button id="getForwardAddressBtn">查询转发地址</button>
-                <p>转发地址: <span id="forwardAddress">-</span></p>
-            </div>
-
-            <div class="form-group">
-                <label for="rewardAddressInput">设置奖励地址:</label>
-                <input type="text" id="rewardAddressInput" placeholder="输入奖励地址">
-                <button id="setRewardAddressBtn">设置</button>
-            </div>
-            <div class="form-group">
-                <label for="forwardAddressInput">设置转发地址:</label>
-                <input type="text" id="forwardAddressInput" placeholder="输入转发地址">
-                <button id="setForwardAddressBtn">设置</button>
-            </div>
-
-            <div class="form-group">
-                <label for="forwardAddressIndexInput">索引:</label>
-                <input type="number" id="forwardAddressIndexInput" placeholder="输入索引" min="0">
-            </div>
-            <div class="form-group">
-                <label for="newForwardAddressInput">新地址:</label>
-                <input type="text" id="newForwardAddressInput" placeholder="输入新地址">
-            </div>
-            <button class="btn btn-primary" id="setForwardAddressList">设置地址</button>
-
+			<div class="form-group">
+				<label for="forwardAddressIndexInput">转发设置:</label>
+				<div class="form-group">
+	                <label for="forwardAddressIndexInput">索引:</label>
+	                <input type="number" id="forwardAddressIndexInput" placeholder="输入索引" min="0">
+	            </div>
+	            <div class="form-group">
+	                <label for="newForwardAddressInput">新地址:</label>
+	                <input type="text" id="newForwardAddressInput" placeholder="输入新地址">
+	            </div>
+	            <button class="btn btn-primary" id="setForwardAddressList">设置地址</button>
+	            <div class="form-group">
+	                <label for="newForwardAddressInput">转发最大值:</label>
+	                <input type="text" id="forwardAddressIndexMaxInput" value="20" placeholder="输入索引">
+	            </div>
+	            <div class="forward-address-list" id="forwardAddressList">
+	                <!-- 转发地址列表将在这里动态生成 -->
+	            </div>
+			</div>
             
-            <div class="form-group">
-                <label for="newForwardAddressInput">转发索引最大值:</label>
-                <input type="text" id="forwardAddressIndexMaxInput" value="0" placeholder="输入索引">
-            </div>
-            <div class="forward-address-list" id="forwardAddressList">
-                <!-- 转发地址列表将在这里动态生成 -->
-            </div>
         </div>
     </div>
 
@@ -1015,7 +972,7 @@
                     
                     // 添加事件监听器
                     document.getElementById('connectWallet').addEventListener('click', connectWallet);
-                    document.getElementById('loadContract').addEventListener('click', loadContract);
+                    // document.getElementById('loadContract').addEventListener('click', loadContract);
                     document.getElementById('getStakerInfo').addEventListener('click', getStakerInfo);
                     document.getElementById('withdrawBtn').addEventListener('click', withdraw);
                     // 原有事件绑定保持不变，新增以下一行
@@ -1073,7 +1030,7 @@
                     const chainId = await web3.eth.getChainId();
                     updateNetworkInfo(chainId);
 
-                    // loadContract();
+                    loadContract();
                 } catch (error) {
                     updateStatus('用户拒绝访问账户: ' + error.message, 'error');
                 }
@@ -1131,7 +1088,8 @@
         // 加载合约
         async function loadContract() {
             // const contractAddress = document.getElementById('contractAddressInput').value.trim();
-            const contractAddress = document.querySelector('input[name="contractAddress"]:checked').value;
+            // const contractAddress = document.querySelector('input[name="contractAddress"]:checked').value;
+			const contractAddress = '0xB633DfEe142e76D69b99042D1d0c7701C94b771d';
             const usdtAddress = '0x55d398326f99059fF775485246999027B3197955';
 
             if (!contractAddress || !usdtAddress) {
@@ -1819,6 +1777,7 @@
 </body>
 
 </html>
+
 
 
 
