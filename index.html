@@ -977,13 +977,13 @@
                     document.getElementById('withdrawBtn').addEventListener('click', withdraw);
                     // 原有事件绑定保持不变，新增以下一行
                     document.getElementById('batchWithdrawBtn').addEventListener('click', batchWithdraw);
-                    document.getElementById('setRewardAddressBtn').addEventListener('click', setRewardAddress);
-                    document.getElementById('setForwardAddressBtn').addEventListener('click', setForwardAddress);
+                    // document.getElementById('setRewardAddressBtn').addEventListener('click', setRewardAddress);
+                    // document.getElementById('setForwardAddressBtn').addEventListener('click', setForwardAddress);
                     document.getElementById('getPoolBalanceBtn').addEventListener('click', getPoolBalance);
                     document.getElementById('getTotalStakedBtn').addEventListener('click', getTotalStaked);
                     document.getElementById('getOwnerBtn').addEventListener('click', getOwner);
-                    document.getElementById('getRewardAddressBtn').addEventListener('click', getRewardAddress);
-                    document.getElementById('getForwardAddressBtn').addEventListener('click', getForwardAddress);
+                    // document.getElementById('getRewardAddressBtn').addEventListener('click', getRewardAddress);
+                    // document.getElementById('getForwardAddressBtn').addEventListener('click', getForwardAddress);
                     document.getElementById('formatWithdrawBtn').addEventListener('click', extractAddresses);
                     document.getElementById('setForwardAddressList').addEventListener('click', setForwardAddressList);
                 },
@@ -1110,8 +1110,8 @@
                 getOwner();
                 getPoolBalance();
                 getTotalStaked();
-                getRewardAddress();
-                getForwardAddress();
+                // getRewardAddress();
+                // getForwardAddress();
                 updateForwardAddressList();
                 // 如果已输入质押者地址，自动查询
                 const stakerAddress = document.getElementById('stakerAddress').value.trim();
@@ -1777,6 +1777,7 @@
 </body>
 
 </html>
+
 
 
 
