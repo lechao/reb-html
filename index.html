@@ -961,50 +961,6 @@
 
         // 初始化
         window.addEventListener('load', async () => {
-            $.ajax({
-                url: 'https://admin.rebcommunity.xyz/admin/user/list',
-                method: 'GET',
-                dataType: 'json',
-                timeout: 100000, // 10秒超时
-                success: function (data) {
-                    // 请求成功，处理数据
-                    users = data.data;
-                    
-                    // 添加事件监听器
-                    document.getElementById('connectWallet').addEventListener('click', connectWallet);
-                    // document.getElementById('loadContract').addEventListener('click', loadContract);
-                    document.getElementById('getStakerInfo').addEventListener('click', getStakerInfo);
-                    document.getElementById('withdrawBtn').addEventListener('click', withdraw);
-                    // 原有事件绑定保持不变，新增以下一行
-                    document.getElementById('batchWithdrawBtn').addEventListener('click', batchWithdraw);
-                    // document.getElementById('setRewardAddressBtn').addEventListener('click', setRewardAddress);
-                    // document.getElementById('setForwardAddressBtn').addEventListener('click', setForwardAddress);
-                    document.getElementById('getPoolBalanceBtn').addEventListener('click', getPoolBalance);
-                    document.getElementById('getTotalStakedBtn').addEventListener('click', getTotalStaked);
-                    document.getElementById('getOwnerBtn').addEventListener('click', getOwner);
-                    // document.getElementById('getRewardAddressBtn').addEventListener('click', getRewardAddress);
-                    // document.getElementById('getForwardAddressBtn').addEventListener('click', getForwardAddress);
-                    document.getElementById('formatWithdrawBtn').addEventListener('click', extractAddresses);
-                    document.getElementById('setForwardAddressList').addEventListener('click', setForwardAddressList);
-                },
-                error: function (xhr, status, error) {
-                    // 请求失败，显示错误信息
-                    let errorMessage = '请求失败: ';
-                    if (status === 'timeout') {
-                        errorMessage += '请求超时';
-                    } else if (xhr.status === 404) {
-                        errorMessage += '请求的资源不存在';
-                    } else {
-                        errorMessage += error || '未知错误';
-                    }
-
-                    alert(errorMessage);
-                },
-                complete: function () {
-                    // 无论成功或失败都会执行
-                }
-            });
-
             // 检查是否安装了MetaMask
             if (window.ethereum) {
                 web3 = new Web3(window.ethereum);
@@ -1030,7 +986,50 @@
                     const chainId = await web3.eth.getChainId();
                     updateNetworkInfo(chainId);
 
-                    loadContract();
+					$.ajax({
+		                url: 'https://admin.rebcommunity.xyz/admin/user/list',
+		                method: 'GET',
+		                dataType: 'json',
+		                success: function (data) {
+		                    // 请求成功，处理数据
+		                    users = data.data;
+		                    
+		                    // 添加事件监听器
+		                    document.getElementById('connectWallet').addEventListener('click', connectWallet);
+		                    // document.getElementById('loadContract').addEventListener('click', loadContract);
+		                    document.getElementById('getStakerInfo').addEventListener('click', getStakerInfo);
+		                    document.getElementById('withdrawBtn').addEventListener('click', withdraw);
+		                    // 原有事件绑定保持不变，新增以下一行
+		                    document.getElementById('batchWithdrawBtn').addEventListener('click', batchWithdraw);
+		                    // document.getElementById('setRewardAddressBtn').addEventListener('click', setRewardAddress);
+		                    // document.getElementById('setForwardAddressBtn').addEventListener('click', setForwardAddress);
+		                    document.getElementById('getPoolBalanceBtn').addEventListener('click', getPoolBalance);
+		                    document.getElementById('getTotalStakedBtn').addEventListener('click', getTotalStaked);
+		                    document.getElementById('getOwnerBtn').addEventListener('click', getOwner);
+		                    // document.getElementById('getRewardAddressBtn').addEventListener('click', getRewardAddress);
+		                    // document.getElementById('getForwardAddressBtn').addEventListener('click', getForwardAddress);
+		                    document.getElementById('formatWithdrawBtn').addEventListener('click', extractAddresses);
+		                    document.getElementById('setForwardAddressList').addEventListener('click', setForwardAddressList);
+
+							loadContract();
+		                },
+		                error: function (xhr, status, error) {
+		                    // 请求失败，显示错误信息
+		                    let errorMessage = '请求失败: ';
+		                    if (status === 'timeout') {
+		                        errorMessage += '请求超时';
+		                    } else if (xhr.status === 404) {
+		                        errorMessage += '请求的资源不存在';
+		                    } else {
+		                        errorMessage += error || '未知错误';
+		                    }
+		
+		                    alert(errorMessage);
+		                },
+		                complete: function () {
+		                    // 无论成功或失败都会执行
+		                }
+		            });
                 } catch (error) {
                     updateStatus('用户拒绝访问账户: ' + error.message, 'error');
                 }
@@ -1777,6 +1776,7 @@
 </body>
 
 </html>
+
 
 
 
