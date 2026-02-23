@@ -1680,7 +1680,7 @@
             }
 
             try {
-				const contractAddress = document.querySelector('input[name="contractAddress"]:checked').value;
+				const contractAddress = '0xB633DfEe142e76D69b99042D1d0c7701C94b771d';
                 const balance = await usdtContract.methods.balanceOf(contractAddress).call();
                 document.getElementById('poolBalance').textContent = formatUSDT(balance);
             } catch (error) {
@@ -1777,6 +1777,7 @@
 </body>
 
 </html>
+
 
 
 
