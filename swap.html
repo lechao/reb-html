@@ -357,9 +357,9 @@
                 <button class="btn" id="connectWalletBtn">
                     <span>连接钱包</span>
                 </button>
-                <button class="btn btn-warning" id="setContractBtn" style="margin-left: 10px; display: none;">
+                <!-- <button class="btn btn-warning" id="setContractBtn" style="margin-left: 10px; display: none;">
                     <span>设置合约</span>
-                </button>
+                </button> -->
             </div>
         </div>
         
@@ -800,7 +800,7 @@
         const walletAddress = document.getElementById('walletAddress');
         const networkName = document.getElementById('networkName');
         const connectWalletBtn = document.getElementById('connectWalletBtn');
-        const setContractBtn = document.getElementById('setContractBtn');
+        // const setContractBtn = document.getElementById('setContractBtn');
         const contractStatus = document.getElementById('contractStatus');
         const rebPrice = document.getElementById('rebPrice');
         const rebReserve = document.getElementById('rebReserve');
@@ -879,7 +879,7 @@
                 walletAddress.textContent = shortAddress;
                 walletAddress.style.display = 'block';
                 updateStatus(true);
-                setContractBtn.style.display = 'inline-flex';
+                // setContractBtn.style.display = 'inline-flex';
                 connectWalletBtn.disabled = true;
                 connectWalletBtn.innerHTML = '<span>已连接</span>';
                 
@@ -919,7 +919,7 @@
             userAddress = null;
             web3 = null;
             walletAddress.style.display = 'none';
-            setContractBtn.style.display = 'none';
+            // setContractBtn.style.display = 'none';
             connectWalletBtn.disabled = false;
             connectWalletBtn.innerHTML = '<span>连接钱包</span>';
             updateStatus(false);
@@ -1202,7 +1202,7 @@
         
         // 事件监听
         connectWalletBtn.addEventListener('click', connectWallet);
-        setContractBtn.addEventListener('click', setContractAddress);
+        // setContractBtn.addEventListener('click', setContractAddress);
         rebAmountInput.addEventListener('input', calculateEstimatedUsdt);
         exchangeBtn.addEventListener('click', exchangeREBtoUSDT);
         enabledToggle.addEventListener('change', updateContractStatus);
@@ -1222,7 +1222,7 @@
                         walletAddress.textContent = shortAddress;
                         walletAddress.style.display = 'block';
                         updateStatus(true);
-                        setContractBtn.style.display = 'inline-flex';
+                        // setContractBtn.style.display = 'inline-flex';
                         connectWalletBtn.disabled = true;
                         connectWalletBtn.innerHTML = '<span>已连接</span>';
                         
@@ -1230,6 +1230,7 @@
                         updateNetworkInfo(chainId);
                         
                         addLog(`自动连接成功: ${shortAddress}`, 'success');
+                        setContractAddress();
                     }
                 } catch (error) {
                     console.error('自动连接失败:', error);
