@@ -1018,7 +1018,7 @@
         }
         
         // 计算预估USDT
-        function calculateEstimatedUsdt() {
+        async function calculateEstimatedUsdt() {
             if (!rebAmountInput.value || parseFloat(rebAmountInput.value) <= 0) {
                 estimatedUsdt.textContent = '0';
                 return;
@@ -1026,7 +1026,9 @@
             
             const rebAmount = parseFloat(rebAmountInput.value);
             // 这里应该从合约获取实际价格，这里用示例价格
-            const price = 100; // 假设1 REB = 100 USDT
+            // const price = 100; // 假设1 REB = 100 USDT
+            let price = await contract.methods.rebToUsdtPrice().call();
+            price = web3.utils.fromWei(price, 'ether');
             estimatedUsdt.textContent = (rebAmount * price).toFixed(2);
         }
         
