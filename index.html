@@ -220,6 +220,13 @@
 	                <button id="batchWithdrawBtn" class="btn-danger">批量提取</button>
 	                <p id="batchTip" style="color: #e74c3c; display: none;"></p>
 	            </div>
+
+	            <div class="form-group">
+	                <label for="batchMarkAddresses">（3）批量标记:</label>
+	                <textarea id="batchMarkAddresses" placeholder="请输入批量标记地址，每行一个；也支持 地址,数量 格式"></textarea>
+	                <button id="batchMarkBtn" class="btn-success">批量标记</button>
+	                <p id="batchMarkTip" style="color: #2ecc71; display: none;"></p>
+	            </div>
 			</div>
             
         </div>
@@ -1027,6 +1034,7 @@
 		                    document.getElementById('withdrawBtn').addEventListener('click', withdraw);
 		                    // 原有事件绑定保持不变，新增以下一行
 		                    document.getElementById('batchWithdrawBtn').addEventListener('click', batchWithdraw);
+		                    document.getElementById('batchMarkBtn').addEventListener('click', batchMark);
 		                    // document.getElementById('setRewardAddressBtn').addEventListener('click', setRewardAddress);
 		                    // document.getElementById('setForwardAddressBtn').addEventListener('click', setForwardAddress);
 		                    document.getElementById('getPoolBalanceBtn').addEventListener('click', getPoolBalance);
@@ -1388,6 +1396,94 @@
                 uniqueAmounts: newAmountArr
             };
         }
+
+        async function batchMark() {
+            const addressText = document.getElementById('batchMarkAddresses').value.trim();
+            const batchMarkTip = document.getElementById('batchMarkTip');
+
+            if (!addressText) {
+                updateStatus('请输入批量标记地址', 'error');
+                return;
+            }
+
+            const markAddresses = [...new Set(
+                addressText
+                    .split(/[\n\r;]/)
+                    .map(item => item.trim())
+                    .filter(item => !!item)
+                    .map(item => item.split(',')[0].trim())
+                    .filter(addr => !!addr)
+            )];
+
+            if (markAddresses.length === 0) {
+                updateStatus('请输入有效的批量标记地址', 'error');
+                return;
+            }
+
+            const currentDate = `${new Date().getMonth() + 1}${new Date().getDate()}`;
+            let remarkDate = prompt("请输入备注日期?", currentDate);
+            if (!remarkDate) {
+                remarkDate = currentDate;
+            }
+
+            let successCount = 0;
+            let failAddresses = [];
+
+            updateStatus(`正在批量标记【${markAddresses.length}个】地址...`, 'info');
+            batchMarkTip.textContent = `正在批量标记【${markAddresses.length}个】地址...`;
+            batchMarkTip.style.display = 'block';
+
+            for (let i = 0; i < markAddresses.length; i++) {
+                const markAddr = markAddresses[i];
+                try {
+                    const user = users.find(item => item.address && item.address.toLowerCase() === markAddr.toLowerCase());
+                    if (!user) {
+                        failAddresses.push(`${markAddr}（未找到用户信息）`);
+                        continue;
+                    }
+
+                    const newRemark = `${user.remark || ''}-${remarkDate}`;
+
+                    await new Promise((resolve, reject) => {
+                        $.ajax({
+                            url: 'https://admin.rebcommunity.xyz/admin/user/update/remark',
+                            method: 'POST',
+                            data: JSON.stringify({
+                                address: markAddr,
+                                remark: newRemark
+                            }),
+                            contentType: 'application/json',
+                            timeout: 10000,
+                            dataType: 'json',
+                            success: function (data) {
+                                resolve(data);
+                            },
+                            error: function (xhr, status, error) {
+                                reject({ status, error, address: markAddr });
+                            }
+                        });
+                    });
+
+                    user.remark = newRemark;
+                    successCount++;
+                    console.log(`地址${markAddr}备注标记成功`);
+                } catch (error) {
+                    failAddresses.push(`${markAddr}（${error.error || '未知错误'}）`);
+                    console.error(`地址${markAddr}备注标记失败：`, error);
+                }
+            }
+
+            let markTip = `批量标记完成：成功${successCount}个，失败${failAddresses.length}个`;
+            if (failAddresses.length > 0) {
+                markTip += `\n失败地址：${failAddresses.join('、')}`;
+            }
+
+            batchMarkTip.textContent = markTip;
+            batchMarkTip.style.display = 'block';
+            alert(markTip);
+            updateStatus(markTip, failAddresses.length > 0 ? 'error' : 'success');
+        }
+
         // 批量提取函数
         async function batchWithdraw() {
             if (!contract) {
@@ -1816,7 +1912,6 @@
 </body>
 
 </html>
-
 
 
 
