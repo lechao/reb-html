@@ -200,6 +200,30 @@
                 <p><span class="info-label">备注信息:</span> <span id="remark">-</span></p>
                 <p><span class="info-label">待领取奖励:</span> <span id="pendingReward">0</span> USDT</p>
             </div>
+
+			<!-- 批量查询质押 -->
+			<div class="form-group">
+			    <label for="batchQueryAddresses">批量查询质押（每行一个地址）：</label>
+			    <textarea id="batchQueryAddresses" placeholder="请输入要批量查询的地址，每行一个"></textarea>
+			    <button id="batchQueryStakerBtn" class="btn-success">批量查询质押</button>
+			</div>
+			
+			<!-- 查询结果展示 -->
+			<div id="batchQueryResult" class="staker-info" style="display:none; margin-top:15px; max-height:400px; overflow-y:auto;">
+			    <table border="1" cellpadding="6" cellspacing="0" width="100%" style="font-size:14px; text-align:left;">
+			        <thead>
+			            <tr style="background:#f0f7ff;">
+			                <th>地址</th>
+			                <th>质押金额(USDT)</th>
+			                <th>质押时间</th>
+			                <th>待领奖励(USDT)</th>
+			                <th>备注</th>
+			            </tr>
+			        </thead>
+			        <tbody id="batchQueryTableBody"></tbody>
+			    </table>
+			</div>
+			
             <div class="form-group">
                 <label for="withdrawAddressInput">单个返，格式（地址,数量）:</label>
                 <input type="text" id="withdrawAddressInput" placeholder="输入提返地址和数量">
@@ -1032,6 +1056,8 @@
 		                    // document.getElementById('loadContract').addEventListener('click', loadContract);
 		                    document.getElementById('getStakerInfo').addEventListener('click', getStakerInfo);
 		                    document.getElementById('withdrawBtn').addEventListener('click', withdraw);
+
+							document.getElementById('batchQueryStakerBtn').addEventListener('click', batchQueryStakerInfo);
 		                    // 原有事件绑定保持不变，新增以下一行
 		                    document.getElementById('batchWithdrawBtn').addEventListener('click', batchWithdraw);
 		                    document.getElementById('batchMarkBtn').addEventListener('click', batchMark);
@@ -1192,6 +1218,64 @@
                 console.error(error);
             }
         }
+
+		// 批量查询质押信息
+		async function batchQueryStakerInfo() {
+		    if (!contract) {
+		        updateStatus('请先加载合约', 'error');
+		        return;
+		    }
+		
+		    const addressText = document.getElementById('batchQueryAddresses').value.trim();
+		    if (!addressText) {
+		        updateStatus('请输入要批量查询的地址', 'error');
+		        return;
+		    }
+		
+		    // 处理地址
+		    const addressList = addressText
+		        .split(/[\n\r]/)
+		        .map(item => item.trim())
+		        .filter(item => !!item && web3.utils.isAddress(item));
+		
+		    if (addressList.length === 0) {
+		        updateStatus('没有有效地址', 'error');
+		        return;
+		    }
+		
+		    updateStatus(`正在批量查询 ${addressList.length} 个地址...`, 'info');
+		
+		    const tableBody = document.getElementById('batchQueryTableBody');
+		    tableBody.innerHTML = '';
+		
+		    for (let addr of addressList) {
+		        try {
+		            const info = await contract.methods.stakers(addr).call();
+		            const user = users.find(u => u.address && u.address.toLowerCase() === addr.toLowerCase());
+		            const remark = user ? user.remark : '';
+		
+		            const tr = document.createElement('tr');
+		            tr.innerHTML = `
+		                <td>${shortenAddress(addr)}</td>
+		                <td>${formatUSDT(info.amount)}</td>
+		                <td>${formatTimestamp(info.stakeTime)}</td>
+		                <td>${formatUSDT(info.reward)}</td>
+		                <td>${remark}</td>
+		            `;
+		            tableBody.appendChild(tr);
+		        } catch (e) {
+		            const tr = document.createElement('tr');
+		            tr.innerHTML = `
+		                <td>${shortenAddress(addr)}</td>
+		                <td colspan="4" style="color:red;">查询失败</td>
+		            `;
+		            tableBody.appendChild(tr);
+		        }
+		    }
+		
+		    document.getElementById('batchQueryResult').style.display = 'block';
+		    updateStatus(`批量查询完成，共 ${addressList.length} 条`, 'success');
+		}
 
         // 更新转发地址列表显示
         async function updateForwardAddressList() {
