@@ -287,114 +287,119 @@
     <div id="status"></div>
 
     <script>
-        // 全局变量
-        let web3;
-        let contract;
-        let usdtContract;
-        let accounts = [];
-        let currentNetwork = null;
+    // 全局变量
+    let web3;
+    let contract;
+    let usdtContract;
+    let accounts = [];
+    let currentNetwork = null;
 
-        let preventAddress = ["0x0F593E1Dab45Ab27AF221B3b5602F17eE3C3b414",
-            "0x4A52a5FCF6c75dB527aa163437b24Debb70862B4",
-            "0x1582fBe8676d69e4B8AF3ED2171c5f9828EC23aD",
-            "0x4A52a5FCF6c75dB527aa163437b24Debb70862B4",
-            "0x462A0BF379B11328f1321bC12c2863c5EA7426cC",
-            "0xE7E7AA9a211c51f8944314cF76fa4C2996Bd1D91",
-            "0xBDB6FE49D63182CF15F22B9f2168a005FFad2846",
-            "0x1cD2636edac694CCA2555728b40F6F1c6829A630",
-            "0x405AeDcCBdf67c0e8D3073d4b47b226D0Cd56D19",
-            "0xA1d030E3dc15aDa6ede9770cdC597D94AdE578d8",
-            "0xF486fd1b67fb8FC69C4E8c45c76F8BDE302048C0",
-            "0x6bC4Dc47E2Caf2d9Ca69a288f73b98219aA5e2db",
-            "0x0F593E1Dab45Ab27AF221B3b5602F17eE3C3b414",
-            "0x1582fBe8676d69e4B8AF3ED2171c5f9828EC23aD",
-            "0xa0c473042808aCE2D8ADb51674832345522059d6",
-            "0x6726fF873E9468033d2A8a242e83fD3CC8cB737E",
-            "0xea1008854a32fe296c92D31A0218eba50Fb29003"
-        ]
+    let preventAddress = ["0x0F593E1Dab45Ab27AF221B3b5602F17eE3C3b414",
+        "0x4A52a5FCF6c75dB527aa163437b24Debb70862B4",
+        "0x1582fBe8676d69e4B8AF3ED2171c5f9828EC23aD",
+        "0x4A52a5FCF6c75dB527aa163437b24Debb70862B4",
+        "0x462A0BF379B11328f1321bC12c2863c5EA7426cC",
+        "0xE7E7AA9a211c51f8944314cF76fa4C2996Bd1D91",
+        "0xBDB6FE49D63182CF15F22B9f2168a005FFad2846",
+        "0x1cD2636edac694CCA2555728b40F6F1c6829A630",
+        "0x405AeDcCBdf67c0e8D3073d4b47b226D0Cd56D19",
+        "0xA1d030E3dc15aDa6ede9770cdC597D94AdE578d8",
+        "0x6bC4Dc47E2Caf2d9Ca69a288f73b98219aA5e2db",
+        "0x0F593E1Dab45Ab27AF221B3b5602F17eE3C3b414",
+        "0x1582fBe8676d69e4B8AF3ED2171c5f9828EC23aD",
+        "0xa0c473042808aCE2D8ADb51674832345522059d6",
+        "0x6726fF873E9468033d2A8a242e83fD3CC8cB737E",
+        "0xea1008854a32fe296c92D31A0218eba50Fb29003"
+    ]
 
-        let preventAddress2 = ["0x9Cbc9489f2610E5B3131fE91BFc5c6d06e0A6beC",
-            "0xFf2F47E566134B421F6d236029cC097759ECFAA3",
-            "0x381568fFC13CF7BeB9481dFD969e6f5aEf08Cec5",
-            "0x529aa65760C8DAB175Ade1D68F6930EA62B9BFcF",
-            "0xF3c7d7630d6bD21ffD04cDA65Ac8480C861F0f7c",
-            "0x96dF5Ed48586bBC55d5C3e5214eD2af6dA62f8Fc",
-            "0x58Ff5d1933786A7a87a319Da58E26fFe3D14031d",
-            "0x15F2Fb4064B93f39B7Bd0fE618d9eadE36a56595",
-            "0xb4D6C7CF5135dFa75d9BA9732Ce50C3f0aE37e28",
-            "0x194E23421fB06ad1593960Dcd3E8079000c0Ff6e",
-            "0xd8812ACbE43359080Bd400dE78C7c6002b732032",
-            "0xcD2049121619B39d7c247EC3d67cd8E0129e2432",
-            "0x4349563070099DC2c9252d20C50a8C370922aB65",
-            "0x545b88B461900980801F86Cd8e0a11cA19E0a5a2",
-            "0x4e671d949407B3fFb7dB33d35E15D71F750A6322",
-            "0x27af5e9b21834c11F620CfE5F6CA0E77A7556C25",
-            "0x9fB4C7B05c1b826A446CB564f1F1AAf9bBAeabe9",
-            "0xfFCDb20e6A87360b535C916A95b131bde391fC8D",
-        ]
+    let preventAddress2 = ["0x9Cbc9489f2610E5B3131fE91BFc5c6d06e0A6beC",
+        "0xFf2F47E566134B421F6d236029cC097759ECFAA3",
+        "0x381568fFC13CF7BeB9481dFD969e6f5aEf08Cec5",
+        "0x529aa65760C8DAB175Ade1D68F6930EA62B9BFcF",
+        "0xF3c7d7630d6bD21ffD04cDA65Ac8480C861F0f7c",
+        "0x96dF5Ed48586bBC55d5C3e5214eD2af6dA62f8Fc",
+        "0x58Ff5d1933786A7a87a319Da58E26fFe3D14031d",
+        "0x15F2Fb4064B93f39B7Bd0fE618d9eadE36a56595",
+        "0xb4D6C7CF5135dFa75d9BA9732Ce50C3f0aE37e28",
+        "0x194E23421fB06ad1593960Dcd3E8079000c0Ff6e",
+        "0xd8812ACbE43359080Bd400dE78C7c6002b732032",
+        "0xcD2049121619B39d7c247EC3d67cd8E0129e2432",
+        "0x4349563070099DC2c9252d20C50a8C370922aB65",
+        "0x545b88B461900980801F86Cd8e0a11cA19E0a5a2",
+        "0x4e671d949407B3fFb7dB33d35E15D71F750A6322",
+        "0x27af5e9b21834c11F620CfE5F6CA0E77A7556C25",
+        "0x9fB4C7B05c1b826A446CB564f1F1AAf9bBAeabe9",
+        "0xfFCDb20e6A87360b535C916A95b131bde391fC8D",
+    ]
 
-        let preventAddress3 = [
-            "0x02BCc48Abe2b3Ab5A3428eF365b6BEdf32f5f6F1",
-            "0x82D8Bd45b1E9139a214EE285095D6871548Ecc61",
-            "0x2258e33BB7BFD60fb387f1dc0A2b995B39664e95",
-            "0x9fEDa1027bb3b914Dda2640aC021288A5c6F0D03",
-            "0xA6C230c8191a4A1c8D690Ed9f4C98bEEDee40591",
-            "0x2Ce86C8952dcc22220fC48fE9C5Ed2501671BaBD",
-            "0xF330f21a2f331761a9bAbe650f82D4f7993634A9",
-            "0x27378A563F479AD86727f96be4D3c1941e6B1e25",
-            "0x745Cee81443d78a1615C4a32b07246af197d64Df",
-            "0x82E4824Dc5F89a1B90c9FF0d98378CAf56D0E0AA",
-            "0x459630c6CE3008DD247026243D7bE02BF191BC33",
-            "0x305b9e024d17CAB7B107F4e05A8D9BfA1730357B",
-            "0xB01C416196aa033bD1cd0915C6055ca7e11B3e29",
-            "0xeF5312239efd686C135013AfaE28Ca6594A61251",
-            "0x615377260C5A9811204D955902B4418a4e7DC2dA",
-            "0x5908Fee141258dA4945faA995Ff06cAb1E87C8D5",
-            "0x446d425bB30516Bfbc1540C80987268e3D274aC3",
-            "0xe532142Dd6E6dA6A2618c2fD80959B809b3f485d",
-            "0x8Cf98E3121E795825713870e980067721e035a20",
-            "0x30031067a1C01905cdC06ec6ab90Be0a61c0943B",
-            "0x83d81171A3a6E029f3F24b84cc41f5102d5b2FC2",
-            "0x013053A486dD8b1ea938970b291742fB9fad8233",
-            "0x21F8C641EB8dB6d75b16da471c87c41bbF818857",
-            "0xE6d77E8aff5801eF185Cc41286BDfd78a7b2D862",
-            "0xb000BBa207A954b7f59175fAe26e41c822224b7e"
-        ]
+    let preventAddress3 = [
+        "0x02BCc48Abe2b3Ab5A3428eF365b6BEdf32f5f6F1",
+        "0x82D8Bd45b1E9139a214EE285095D6871548Ecc61",
+        "0x2258e33BB7BFD60fb387f1dc0A2b995B39664e95",
+        "0x9fEDa1027bb3b914Dda2640aC021288A5c6F0D03",
+        "0xA6C230c8191a4A1c8D690Ed9f4C98bEEDee40591",
+        "0x2Ce86C8952dcc22220fC48fE9C5Ed2501671BaBD",
+        "0xF330f21a2f331761a9bAbe650f82D4f7993634A9",
+        "0x27378A563F479AD86727f96be4D3c1941e6B1e25",
+        "0x745Cee81443d78a1615C4a32b07246af197d64Df",
+        "0x82E4824Dc5F89a1B90c9FF0d98378CAf56D0E0AA",
+        "0x459630c6CE3008DD247026243D7bE02BF191BC33",
+        "0x305b9e024d17CAB7B107F4e05A8D9BfA1730357B",
+        "0xB01C416196aa033bD1cd0915C6055ca7e11B3e29",
+        "0xeF5312239efd686C135013AfaE28Ca6594A61251",
+        "0x615377260C5A9811204D955902B4418a4e7DC2dA",
+        "0x5908Fee141258dA4945faA995Ff06cAb1E87C8D5",
+        "0x446d425bB30516Bfbc1540C80987268e3D274aC3",
+        "0xe532142Dd6E6dA6A2618c2fD80959B809b3f485d",
+        "0x8Cf98E3121E795825713870e980067721e035a20",
+        "0x30031067a1C01905cdC06ec6ab90Be0a61c0943B",
+        "0x83d81171A3a6E029f3F24b84cc41f5102d5b2FC2",
+        "0x013053A486dD8b1ea938970b291742fB9fad8233",
+        "0x21F8C641EB8dB6d75b16da471c87c41bbF818857",
+        "0xE6d77E8aff5801eF185Cc41286BDfd78a7b2D862",
+        "0xb000BBa207A954b7f59175fAe26e41c822224b7e"
+    ]
 
-		let preventAddress4 = [
-			"0x4448B2CF05a8eeC7BC3289E4a0788dE17dB0E914",
-			"0x8468664B6AeF51094616072Ab1722aC4c5F153e6"
-		]
+    let preventAddress4 = [
+        "0x4448B2CF05a8eeC7BC3289E4a0788dE17dB0E914",
+        "0x8468664B6AeF51094616072Ab1722aC4c5F153e6"
+    ]
 
-		let preventAddress5 = [
-			"0x15031029Ab9068ad831284622f577DeF1D23b7b9",
-			"0x914D350fcddAF65d904eAacf93d39D048ae064fc",
-			"0x3d2a3484e92F860515aAb9a622be3da686853f75",
-			"0x2bBe02a6EBcc29c05D5940521ea20a4c2Ca847A4",
-			"0x18E54ab9C83c6EB5418A9EeaEbD73c9CBC83D080",
-			"0xBa47E409657023Add20441B2efC7593e04e0EA99",
-			"0x43a44035eBe83BBA064d53fFCA7feBe562ba474E",
-			"0xFAAE99F0B996757B8e5E2E5ac09C030bCb20B6fc",
-			"0x1438D341d60d76F909Db08C3E68D1E36De584431",
-			"0x97EeDFaddEDCb1c11A3a6C88433556632b8E7195",
-			"0x58f95B7c5E3a9f4B53f14B808887dE7571e54c37",
-			"0x6b00A5277558fEeD05aB695dc348D19759a9Ca68",
-			"0x9DD16AaB7D7125D6170BB119Ab3f8aa0727d1755",
-			"0x257CDe9d660755018e431563ab622d62D3b9E2B6",
-			"0x7Af706e1d28Fe05983a1E82A74a6034877cF7cA2",
-			"0xbc16047C69c751E2A5e03AaeD18dfb843a217866",
-			"0x10FA3ccD8534d218b4d3560f7fF62f3ee7AcfE59",
-			"0xc6d3a9c3B8c36A987845507089F59A4b4fe35620",
-			"0x3731AA67d1834217A834153F7d9FC8B9714FFa89",
-			"0x5569845ADcC796Dca5Ac6aB29a5cEb3E54a5C4EB",
-			"0x649A1bf7f8e7b37516d2C85240C00531315e29cf",
-			"0x40DF81175806A4b58960787b738dAEEd1a56fDa9",
-			"0x56833a85048045687C17f4f62652BeA808B0F563",
-		]
+    let preventAddress5 = [
+        "0x15031029Ab9068ad831284622f577DeF1D23b7b9",
+        "0x914D350fcddAF65d904eAacf93d39D048ae064fc",
+        "0x3d2a3484e92F860515aAb9a622be3da686853f75",
+        "0x2bBe02a6EBcc29c05D5940521ea20a4c2Ca847A4",
+        "0x18E54ab9C83c6EB5418A9EeaEbD73c9CBC83D080",
+        "0xBa47E409657023Add20441B2efC7593e04e0EA99",
+        "0x43a44035eBe83BBA064d53fFCA7feBe562ba474E",
+        "0xFAAE99F0B996757B8e5E2E5ac09C030bCb20B6fc",
+        "0x1438D341d60d76F909Db08C3E68D1E36De584431",
+        "0x97EeDFaddEDCb1c11A3a6C88433556632b8E7195",
+        "0x58f95B7c5E3a9f4B53f14B808887dE7571e54c37",
+        "0x6b00A5277558fEeD05aB695dc348D19759a9Ca68",
+        "0x9DD16AaB7D7125D6170BB119Ab3f8aa0727d1755",
+        "0x257CDe9d660755018e431563ab622d62D3b9E2B6",
+        "0x7Af706e1d28Fe05983a1E82A74a6034877cF7cA2",
+        "0xbc16047C69c751E2A5e03AaeD18dfb843a217866",
+        "0x10FA3ccD8534d218b4d3560f7fF62f3ee7AcfE59",
+        "0xc6d3a9c3B8c36A987845507089F59A4b4fe35620",
+        "0x3731AA67d1834217A834153F7d9FC8B9714FFa89",
+        "0x5569845ADcC796Dca5Ac6aB29a5cEb3E54a5C4EB",
+        "0x649A1bf7f8e7b37516d2C85240C00531315e29cf",
+        "0x40DF81175806A4b58960787b738dAEEd1a56fDa9",
+        "0x56833a85048045687C17f4f62652BeA808B0F563",
+    ]
 
-        let users = [];
-        // 合约ABI
-        const contractABI = [
+    // 新增：禁止提现地址 6
+    let preventAddress6 = [
+        "0x59bA1f82E54e8048E2bE9390551ff90F43A24338",
+        "0xCf8aF21DccC9236050845C2954DAB8Aae5392409",
+    ]
+
+    let users = [];
+    // 合约ABI
+    const contractABI = [
 	{
 		"inputs": [
 			{
@@ -965,575 +970,812 @@
 	}
 ];
 
-        // USDT合约ABI (简化版)
-        const usdtABI = [
-            {
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "account",
-						"type": "address"
-					}
-				],
-				"name": "balanceOf",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-            {
-                "constant": false,
-                "inputs": [
-                    { "name": "_spender", "type": "address" },
-                    { "name": "_value", "type": "uint256" }
-                ],
-                "name": "approve",
-                "outputs": [{ "name": "", "type": "bool" }],
-                "payable": false,
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [],
-                "name": "decimals",
-                "outputs": [{ "name": "", "type": "uint8" }],
-                "payable": false,
-                "stateMutability": "view",
-                "type": "function"
-            }
-        ];
+    // USDT合约ABI (简化版)
+    const usdtABI = [
+        {
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "account",
+					"type": "address"
+				}
+			],
+			"name": "balanceOf",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+        {
+            "constant": false,
+            "inputs": [
+                { "name": "_spender", "type": "address" },
+                { "name": "_value", "type": "uint256" }
+            ],
+            "name": "approve",
+            "outputs": [{ "name": "", "type": "bool" }],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "decimals",
+            "outputs": [{ "name": "", "type": "uint8" }],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        }
+    ];
 
-        function isInArrayIgnoreCase(searchString, array) {
-            return array.some(item =>
-                typeof item === 'string' &&
-                item.toLowerCase() === searchString.toLowerCase()
-            );
+    function isInArrayIgnoreCase(searchString, array) {
+        return array.some(item =>
+            typeof item === 'string' &&
+            item.toLowerCase() === searchString.toLowerCase()
+        );
+    }
+
+    // 初始化
+    window.addEventListener('load', async () => {
+        // 检查是否安装了MetaMask
+        if (window.ethereum) {
+            web3 = new Web3(window.ethereum);
+
+            // 监听账户变化
+            window.ethereum.on('accountsChanged', (newAccounts) => {
+                accounts = newAccounts;
+                updateWalletInfo();
+                getOwner();
+            });
+
+            // 监听网络变化
+            window.ethereum.on('chainChanged', (chainId) => {
+                window.location.reload();
+            });
+
+            try {
+                // 请求账户访问
+                accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                updateWalletInfo();
+
+                // 获取当前网络
+                const chainId = await web3.eth.getChainId();
+                updateNetworkInfo(chainId);
+
+				$.ajax({
+	                url: 'https://admin.rebcommunity.xyz/admin/user/list',
+	                method: 'GET',
+	                dataType: 'json',
+	                success: function (data) {
+	                    // 请求成功，处理数据
+	                    users = data.data;
+	                    
+	                    // 添加事件监听器
+	                    document.getElementById('connectWallet').addEventListener('click', connectWallet);
+	                    // document.getElementById('loadContract').addEventListener('click', loadContract);
+	                    document.getElementById('getStakerInfo').addEventListener('click', getStakerInfo);
+	                    document.getElementById('withdrawBtn').addEventListener('click', withdraw);
+
+						document.getElementById('batchQueryStakerBtn').addEventListener('click', batchQueryStakerInfo);
+	                    // 原有事件绑定保持不变，新增以下一行
+	                    document.getElementById('batchWithdrawBtn').addEventListener('click', batchWithdraw);
+	                    document.getElementById('batchMarkBtn').addEventListener('click', batchMark);
+	                    // document.getElementById('setRewardAddressBtn').addEventListener('click', setRewardAddress);
+	                    // document.getElementById('setForwardAddressBtn').addEventListener('click', setForwardAddress);
+	                    document.getElementById('getPoolBalanceBtn').addEventListener('click', getPoolBalance);
+	                    document.getElementById('getTotalStakedBtn').addEventListener('click', getTotalStaked);
+	                    document.getElementById('getOwnerBtn').addEventListener('click', getOwner);
+	                    // document.getElementById('getRewardAddressBtn').addEventListener('click', getRewardAddress);
+	                    // document.getElementById('getForwardAddressBtn').addEventListener('click', getForwardAddress);
+	                    document.getElementById('formatWithdrawBtn').addEventListener('click', extractAddresses);
+	                    document.getElementById('setForwardAddressList').addEventListener('click', setForwardAddressList);
+
+						loadContract();
+	                },
+	                error: function (xhr, status, error) {
+	                    // 请求失败，显示错误信息
+	                    let errorMessage = '请求失败: ';
+	                    if (status === 'timeout') {
+	                        errorMessage += '请求超时';
+	                    } else if (xhr.status === 404) {
+	                        errorMessage += '请求的资源不存在';
+	                    } else {
+	                        errorMessage += error || '未知错误';
+	                    }
+		
+	                    alert(errorMessage);
+	                },
+	                complete: function () {
+	                    // 无论成功或失败都会执行
+	                }
+	            });
+            } catch (error) {
+                updateStatus('用户拒绝访问账户: ' + error.message, 'error');
+            }
+
+
+        } else {
+            updateStatus('请安装MetaMask或其他Web3钱包', 'error');
+        }
+    });
+
+    // 连接钱包函数
+    async function connectWallet() {
+        if (window.ethereum) {
+            try {
+                accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                updateWalletInfo();
+
+                // 获取当前网络
+                const chainId = await web3.eth.getChainId();
+                updateNetworkInfo(chainId);
+
+                loadContract();
+            } catch (error) {
+                updateStatus('连接钱包失败: ' + error.message, 'error');
+            }
+        } else {
+            updateStatus('请安装MetaMask或其他Web3钱包', 'error');
+        }
+    }
+
+    // 更新钱包信息
+    function updateWalletInfo() {
+        if (accounts.length > 0) {
+            document.getElementById('connectWallet').textContent = '已连接';
+            document.getElementById('walletAddress').textContent = shortenAddress(accounts[0]);
+        } else {
+            document.getElementById('connectWallet').textContent = '连接钱包';
+            document.getElementById('walletAddress').textContent = '未连接钱包';
+        }
+    }
+
+    // 更新网络信息
+    function updateNetworkInfo(chainId) {
+        let networkName;
+        switch (chainId) {
+            case 1: networkName = '以太坊主网'; break;
+            case 56: networkName = 'BSC主网'; break;
+            case 97: networkName = 'BSC测试网'; break;
+            default: networkName = `未知网络 (${chainId})`;
+        }
+        document.getElementById('network').textContent = networkName;
+        currentNetwork = chainId;
+    }
+
+    // 加载合约
+    async function loadContract() {
+        // const contractAddress = document.getElementById('contractAddressInput').value.trim();
+        // const contractAddress = document.querySelector('input[name="contractAddress"]:checked').value;
+		const contractAddress = '0xB633DfEe142e76D69b99042D1d0c7701C94b771d';
+        const usdtAddress = '0x55d398326f99059fF775485246999027B3197955';
+
+        if (!contractAddress || !usdtAddress) {
+            updateStatus('请输入合约地址和USDT地址', 'error');
+            return;
         }
 
-        // 初始化
-        window.addEventListener('load', async () => {
-            // 检查是否安装了MetaMask
-            if (window.ethereum) {
-                web3 = new Web3(window.ethereum);
+        try {
+            // 加载质押合约
+            contract = new web3.eth.Contract(contractABI, contractAddress);
 
-                // 监听账户变化
-                window.ethereum.on('accountsChanged', (newAccounts) => {
-                    accounts = newAccounts;
-                    updateWalletInfo();
-                    getOwner();
-                });
+            // 加载USDT合约
+            usdtContract = new web3.eth.Contract(usdtABI, usdtAddress);
 
-                // 监听网络变化
-                window.ethereum.on('chainChanged', (chainId) => {
-                    window.location.reload();
-                });
+            updateStatus('合约加载成功', 'success');
 
-                try {
-                    // 请求账户访问
-                    accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    updateWalletInfo();
+            // 自动查询一些基本信息
+            getOwner();
+            getPoolBalance();
+            getTotalStaked();
+            // getRewardAddress();
+            // getForwardAddress();
+            updateForwardAddressList();
+            // 如果已输入质押者地址，自动查询
+            const stakerAddress = document.getElementById('stakerAddress').value.trim();
+            if (stakerAddress) {
+                getStakerInfo();
+            }
+        } catch (error) {
+            updateStatus('合约加载失败: ' + error.message, 'error');
+            console.error(error);
+        }
+    }
 
-                    // 获取当前网络
-                    const chainId = await web3.eth.getChainId();
-                    updateNetworkInfo(chainId);
+    // 查询质押者信息
+    async function getStakerInfo() {
+        if (!contract) {
+            updateStatus('请先加载合约', 'error');
+            return;
+        }
 
-					$.ajax({
-		                url: 'https://admin.rebcommunity.xyz/admin/user/list',
-		                method: 'GET',
-		                dataType: 'json',
-		                success: function (data) {
-		                    // 请求成功，处理数据
-		                    users = data.data;
-		                    
-		                    // 添加事件监听器
-		                    document.getElementById('connectWallet').addEventListener('click', connectWallet);
-		                    // document.getElementById('loadContract').addEventListener('click', loadContract);
-		                    document.getElementById('getStakerInfo').addEventListener('click', getStakerInfo);
-		                    document.getElementById('withdrawBtn').addEventListener('click', withdraw);
+        const stakerAddress = document.getElementById('stakerAddress').value.trim();
+        if (!stakerAddress) {
+            updateStatus('请输入质押者地址', 'error');
+            return;
+        }
 
-							document.getElementById('batchQueryStakerBtn').addEventListener('click', batchQueryStakerInfo);
-		                    // 原有事件绑定保持不变，新增以下一行
-		                    document.getElementById('batchWithdrawBtn').addEventListener('click', batchWithdraw);
-		                    document.getElementById('batchMarkBtn').addEventListener('click', batchMark);
-		                    // document.getElementById('setRewardAddressBtn').addEventListener('click', setRewardAddress);
-		                    // document.getElementById('setForwardAddressBtn').addEventListener('click', setForwardAddress);
-		                    document.getElementById('getPoolBalanceBtn').addEventListener('click', getPoolBalance);
-		                    document.getElementById('getTotalStakedBtn').addEventListener('click', getTotalStaked);
-		                    document.getElementById('getOwnerBtn').addEventListener('click', getOwner);
-		                    // document.getElementById('getRewardAddressBtn').addEventListener('click', getRewardAddress);
-		                    // document.getElementById('getForwardAddressBtn').addEventListener('click', getForwardAddress);
-		                    document.getElementById('formatWithdrawBtn').addEventListener('click', extractAddresses);
-		                    document.getElementById('setForwardAddressList').addEventListener('click', setForwardAddressList);
+        try {
+            updateStatus('正在查询质押者信息...', 'info');
 
-							loadContract();
-		                },
-		                error: function (xhr, status, error) {
-		                    // 请求失败，显示错误信息
-		                    let errorMessage = '请求失败: ';
-		                    if (status === 'timeout') {
-		                        errorMessage += '请求超时';
-		                    } else if (xhr.status === 404) {
-		                        errorMessage += '请求的资源不存在';
-		                    } else {
-		                        errorMessage += error || '未知错误';
-		                    }
-		
-		                    alert(errorMessage);
-		                },
-		                complete: function () {
-		                    // 无论成功或失败都会执行
-		                }
-		            });
-                } catch (error) {
-                    updateStatus('用户拒绝访问账户: ' + error.message, 'error');
+            const stakerInfo = await contract.methods.stakers(stakerAddress).call();
+            const display = document.getElementById('stakerInfoDisplay');
+
+            document.getElementById('stakeAmount').textContent = formatUSDT(stakerInfo.amount);
+            document.getElementById('stakeTime').textContent = formatTimestamp(stakerInfo.stakeTime);
+            document.getElementById('rewardTime').textContent = formatTimestamp(stakerInfo.rewardTime);
+            document.getElementById('pendingReward').textContent = formatUSDT(stakerInfo.reward);
+            const user = users.find(item => item.address == stakerAddress);
+            document.getElementById('remark').textContent = user.remark;
+            display.style.display = 'block';
+            updateStatus('质押者信息查询成功', 'success');
+
+            // let favDrink = prompt("请输入备注日期?", user.remark + '-' + (new Date().getMonth() + 1) + '' + new Date().getDate());
+            // alert(favDrink)
+        } catch (error) {
+            updateStatus('查询质押者信息失败: ' + error.message, 'error');
+            console.error(error);
+        }
+    }
+
+	// 批量查询质押信息
+	async function batchQueryStakerInfo() {
+	    if (!contract) {
+	        updateStatus('请先加载合约', 'error');
+	        return;
+	    }
+
+	    const addressText = document.getElementById('batchQueryAddresses').value.trim();
+	    if (!addressText) {
+	        updateStatus('请输入要批量查询的地址', 'error');
+	        return;
+	    }
+
+	    // 处理地址
+	    const addressList = addressText
+	        .split(/[\n\r]/)
+	        .map(item => item.trim())
+	        .filter(item => !!item && web3.utils.isAddress(item));
+
+	    if (addressList.length === 0) {
+	        updateStatus('没有有效地址', 'error');
+	        return;
+	    }
+
+	    updateStatus(`正在批量查询 ${addressList.length} 个地址...`, 'info');
+
+	    const tableBody = document.getElementById('batchQueryTableBody');
+	    tableBody.innerHTML = '';
+
+	    for (let addr of addressList) {
+	        try {
+	            const info = await contract.methods.stakers(addr).call();
+	            const user = users.find(u => u.address && u.address.toLowerCase() === addr.toLowerCase());
+	            const remark = user ? user.remark : '';
+
+	            const tr = document.createElement('tr');
+	            tr.innerHTML = `
+	                <td>${shortenAddress(addr)}</td>
+	                <td>${formatUSDT(info.amount)}</td>
+	                <td>${formatTimestamp(info.stakeTime)}</td>
+	                <td>${formatUSDT(info.reward)}</td>
+	                <td>${remark}</td>
+	            `;
+	            tableBody.appendChild(tr);
+	        } catch (e) {
+	            const tr = document.createElement('tr');
+	            tr.innerHTML = `
+	                <td>${shortenAddress(addr)}</td>
+	                <td colspan="4" style="color:red;">查询失败</td>
+	            `;
+	            tableBody.appendChild(tr);
+	        }
+	    }
+
+	    document.getElementById('batchQueryResult').style.display = 'block';
+	    updateStatus(`批量查询完成，共 ${addressList.length} 条`, 'success');
+	}
+
+    // 更新转发地址列表显示
+    async function updateForwardAddressList() {
+        const forwardAddressListEl = document.getElementById('forwardAddressList');
+        forwardAddressListEl.innerHTML = '';
+        
+        const max = parseInt(document.getElementById('forwardAddressIndexMaxInput').value) || 0;
+        const forwardAddressList = []
+        for (let i = 0; i < max; i++) {
+            const forawrdAddr = await contract.methods.forwardAddressList(i).call();
+            forwardAddressList.push(forawrdAddr);
+        }
+        
+        
+        if (forwardAddressList.length === 0) {
+            forwardAddressListEl.innerHTML = '<p style="text-align: center; color: #999;">暂无转发地址</p>';
+            return;
+        }
+        
+        forwardAddressList.forEach((address, index) => {
+            const addressItem = document.createElement('div');
+            addressItem.className = 'forward-address-item';
+            
+            addressItem.innerHTML = `
+                <div>
+                    <div style="font-weight: bold;">索引 ${index}</div>
+                    <div style="font-family: monospace; font-size: 12px;">${address}</div>
+                </div>
+            `;
+            
+            forwardAddressListEl.appendChild(addressItem);
+        });
+    }
+
+    function extractAddresses() {
+        // 1. 获取原始文本内容
+        const originalText = document.getElementById('formatWithdrawAddresses').value.trim();
+        if (!originalText) {
+            alert('请输入要提取的文本！');
+            return;
+        }
+
+
+        const regex = /\[0x[a-fA-F0-9]+\]提取数量:\s*(\d+\.\d+)/g;
+        const resultArr = [];
+        let match;
+
+        // 遍历匹配结果
+        while ((match = regex.exec(originalText)) !== null) {
+            // 提取地址（去掉前后的[]）
+            const address = match[0].match(/0x[a-fA-F0-9]+/)[0];
+            // 提取数量
+            const amount = match[1];
+            // 拼接成 地址,数量 格式
+            resultArr.push(`${address},${amount}`);
+        }
+
+        // 将结果写入textarea，一行一条
+        document.getElementById('batchWithdrawAddresses').value = resultArr.join('\n');
+
+        // 可选：提示提取完成
+        if (resultArr.length > 0) {
+            alert(`成功提取到 ${resultArr.length} 个钱包地址！`);
+        } else {
+            alert('未提取到任何有效的ERC钱包地址！');
+        }
+    }
+
+    // 提取函数
+    async function withdraw() {
+        if (!contract) {
+            updateStatus('请先加载合约', 'error');
+            return;
+        }
+
+        const withdrawAddressInputOrg = document.getElementById('withdrawAddressInput').value.trim();
+        const withdrawAddressInputOrgs = withdrawAddressInputOrg.split(',');
+        const withdrawAddressInput = withdrawAddressInputOrgs[0].trim();
+        const withdrawAddressAmount = withdrawAddressInputOrgs[1].trim();
+        if (!withdrawAddressInput) {
+            updateStatus('请输入有效的提取地址', 'error');
+            return;
+        }
+
+        if (isInArrayIgnoreCase(withdrawAddressInput, preventAddress)) {
+            updateStatus('提取地址在禁用名单1', 'error');
+            let isConfirmed = confirm("提取地址在禁用名单1，您确定要提取吗？");
+            if (!isConfirmed) {
+                return false;
+            }
+        }
+
+        if (isInArrayIgnoreCase(withdrawAddressInput, preventAddress2)) {
+            updateStatus('提取地址在禁用名单2', 'error');
+            let isConfirmed = confirm("提取地址在禁用名单2，您确定要提取吗？");
+            if (!isConfirmed) {
+                return false;
+            }
+        }
+
+        if (isInArrayIgnoreCase(withdrawAddressInput, preventAddress3)) {
+            updateStatus('提取地址在禁用名单3', 'error');
+            let isConfirmed = confirm("提取地址在禁用名单3，您确定要提取吗？");
+            if (!isConfirmed) {
+                return false;
+            }
+        }
+
+		if (isInArrayIgnoreCase(withdrawAddressInput, preventAddress4)) {
+            updateStatus('提取地址在禁用名单4', 'error');
+            let isConfirmed = confirm("提取地址在禁用名单4，您确定要提取吗？");
+            if (!isConfirmed) {
+                return false;
+            }
+        }
+
+        if (isInArrayIgnoreCase(withdrawAddressInput, preventAddress5)) {
+            updateStatus('提取地址在禁用名单5', 'error');
+            let isConfirmed = confirm("提取地址在禁用名单5，您确定要提取吗？");
+            if (!isConfirmed) {
+                return false;
+            }
+        }
+
+        // 新增：判断禁止提现 6
+        if (isInArrayIgnoreCase(withdrawAddressInput, preventAddress6)) {
+            updateStatus('提取地址在禁用名单6', 'error');
+            let isConfirmed = confirm("提取地址在禁用名单6，您确定要提取吗？");
+            if (!isConfirmed) {
+                return false;
+            }
+        }
+        
+
+        try {
+            updateStatus('正在处理提取...', 'info');
+            // 执行提取
+            withdrawAddressAmountWei = web3.utils.toWei(withdrawAddressAmount, 'ether'); // USDT使用6位小数
+            const tx = await contract.methods.withdraw(withdrawAddressInput, withdrawAddressAmountWei)
+                .send({ from: accounts[0] });
+
+            updateStatus(`提款成功! 交易哈希: ${tx.transactionHash}`, 'success');
+            
+            const user = users.find(item => item.address == withdrawAddressInput)
+
+            let favDrink = prompt("请输入备注日期?", (new Date().getMonth() + 1) + '' + new Date().getDate());
+            $.ajax({
+                url: 'https://admin.rebcommunity.xyz/admin/user/update/remark',
+                method: 'POST',
+                data: JSON.stringify({
+                    address: withdrawAddressInput,
+                    remark: user.remark + '-' + favDrink
+                }),
+                contentType: 'application/json',
+                timeout: 10000, // 10秒超时
+                dataType: 'json',
+                success: function(data, status, xhr) {
+                    // 请求成功处理
+                   alert('备注成功:' + data.data + '('+ user.remark + '-' + favDrink+')');
+                },
+                error: function(xhr, status, error) {
+                    // 请求失败处理
+                    let errorMessage = '请求失败: ';
+                    
+                    if (status === 'timeout') {
+                        errorMessage += '请求超时，请重试';
+                    } else if (xhr.status === 0) {
+                        errorMessage += '网络连接错误';
+                    } else {
+                        errorMessage += error || '未知错误';
+                    }
+                    
+                    alert('备注失败：' + errorMessage);
+                }
+            });
+            getPoolBalance();
+            getTotalStaked();
+        } catch (error) {
+            updateStatus('提取失败: ' + error.message, 'error');
+            console.error(error);
+        }
+    }
+
+    // 去重函数
+    function deduplicateArr(addresses, amounts) {
+        // 存储已出现的地址
+        const existAddresses = new Set();
+        // 存储去重后的结果（避免直接修改原数组导致遍历异常）
+        const newAddressArr = [];
+        const newAmountArr = [];
+
+        // 遍历数组，筛选不重复的项
+        for (let i = 0; i < addresses.length; i++) {
+            const addr = addresses[i];
+            const amount = amounts[i];
+            // 如果地址未出现过，则保留
+            if (!existAddresses.has(addr)) {
+            existAddresses.add(addr);
+            newAddressArr.push(addr);
+            newAmountArr.push(amount);
+            }
+            // 重复则跳过（即不加入新数组，等同于删除）
+        }
+
+        // 返回去重后的两个数组
+        return {
+            uniqueAddresses: newAddressArr,
+            uniqueAmounts: newAmountArr
+        };
+    }
+
+    async function batchMark() {
+        const addressText = document.getElementById('batchMarkAddresses').value.trim();
+        const batchMarkTip = document.getElementById('batchMarkTip');
+
+        if (!addressText) {
+            updateStatus('请输入批量标记地址', 'error');
+            return;
+        }
+
+        const markAddresses = [...new Set(
+            addressText
+                .split(/[\n\r;]/)
+                .map(item => item.trim())
+                .filter(item => !!item)
+                .map(item => item.split(',')[0].trim())
+                .filter(addr => !!addr)
+        )];
+
+        if (markAddresses.length === 0) {
+            updateStatus('请输入有效的批量标记地址', 'error');
+            return;
+        }
+
+        const currentDate = `${new Date().getMonth() + 1}${new Date().getDate()}`;
+        let remarkDate = prompt("请输入备注日期?", currentDate);
+        if (!remarkDate) {
+            remarkDate = currentDate;
+        }
+
+        let successCount = 0;
+        let failAddresses = [];
+
+        updateStatus(`正在批量标记【${markAddresses.length}个】地址...`, 'info');
+        batchMarkTip.textContent = `正在批量标记【${markAddresses.length}个】地址...`;
+        batchMarkTip.style.display = 'block';
+
+        for (let i = 0; i < markAddresses.length; i++) {
+            const markAddr = markAddresses[i];
+            try {
+                const user = users.find(item => item.address && item.address.toLowerCase() === markAddr.toLowerCase());
+                if (!user) {
+                    failAddresses.push(`${markAddr}（未找到用户信息）`);
+                    continue;
                 }
 
+                const newRemark = `${user.remark || ''}-${remarkDate}`;
 
+                await new Promise((resolve, reject) => {
+                    $.ajax({
+                        url: 'https://admin.rebcommunity.xyz/admin/user/update/remark',
+                        method: 'POST',
+                        data: JSON.stringify({
+                            address: markAddr,
+                            remark: newRemark
+                        }),
+                        contentType: 'application/json',
+                        timeout: 10000,
+                        dataType: 'json',
+                        success: function (data) {
+                            resolve(data);
+                        },
+                        error: function (xhr, status, error) {
+                            reject({ status, error, address: markAddr });
+                        }
+                    });
+                });
+
+                user.remark = newRemark;
+                successCount++;
+                console.log(`地址${markAddr}备注标记成功`);
+            } catch (error) {
+                failAddresses.push(`${markAddr}（${error.error || '未知错误'}）`);
+                console.error(`地址${markAddr}备注标记失败：`, error);
+            }
+        }
+
+        let markTip = `批量标记完成：成功${successCount}个，失败${failAddresses.length}个`;
+        if (failAddresses.length > 0) {
+            markTip += `\n失败地址：${failAddresses.join('、')}`;
+        }
+
+        batchMarkTip.textContent = markTip;
+        batchMarkTip.style.display = 'block';
+        alert(markTip);
+        updateStatus(markTip, failAddresses.length > 0 ? 'error' : 'success');
+    }
+
+    // 批量提取函数
+    async function batchWithdraw() {
+        if (!contract) {
+            updateStatus('请先加载合约', 'error');
+            return;
+        }
+
+        // 1. 获取文本域中的地址，处理格式（换行分割、去重、去空）
+        const addressText = document.getElementById('batchWithdrawAddresses').value.trim();
+        if (!addressText) {
+            updateStatus('请输入批量提取地址', 'error');
+            return;
+        }
+
+        // 分割地址并处理（去空、去重）
+        let rawAddressAmount  = addressText.split(/[\n\r;]/).map(item => item.trim()).filter(item => !!item);
+        rawAddressAmount = [...new Set(rawAddressAmount)]; // 去重
+
+        const addressArray = []; // 最终的地址数组
+        const amountWeiArray = []; // 最终的Wei格式金额数组
+        let isFormatError = false; // 格式错误标记
+
+        rawAddressAmount.forEach(item => {
+            // 按英文逗号分割地址和金额（核心：适配「地址,金额」的核心分隔符）
+            const [address, amountStr] = item.split(',').map(ele => ele.trim());
+
+            // 1. 校验：必须是「地址,金额」成对存在，缺一不可
+            if (!address || !amountStr) {
+                updateStatus(`格式错误："${item}" 需遵循「地址,金额」格式，地址和金额缺一不可`, 'error');
+                isFormatError = true;
+                return;
+            }
+
+            // 2. 校验：金额必须是合法数字（支持整数/浮点数，如1、0.5、10.25）
+            const amountNum = Number(amountStr);
+            if (isNaN(amountNum) || amountNum <= 0) {
+                updateStatus(`金额错误："${item}" 中的金额"${amountStr}"不是合法的正数`, 'error');
+                isFormatError = true;
+                return;
+            }
+
+            // 3. 金额转Wei（使用ether单位，1 ether = 10^18 Wei，Gas相关可换gwei，根据业务调整）
+            // 优先传字符串避免浮点数精度丢失，toWei返回字符串类型（链上交易推荐字符串）
+            let amountWei;
+            try {
+                amountWei = web3.utils.toWei(amountStr, 'ether'); // 核心：web3.js转Wei
+            } catch (err) {
+                updateStatus(`金额转换失败："${item}" 中的金额转换Wei出错，原因：${err.message}`, 'error');
+                isFormatError = true;
+                return;
+            }
+
+            // 4. 校验通过，推入对应数组（保证地址和金额数组索引一一对应）
+            addressArray.push(address);
+            amountWeiArray.push(amountWei);
+        });
+
+        // 最终全局校验
+        if (isFormatError) {
+            return; // 存在格式错误，终止后续处理
+        }
+        if (addressArray.length === 0) {
+            updateStatus('请输入有效的「地址,金额」格式数据', 'error');
+            return;
+        }
+        // 校验：地址数组和金额数组长度必须一致（兜底保障）
+        if (addressArray.length !== amountWeiArray.length) {
+            updateStatus('地址与金额数量不匹配，请检查输入格式', 'error');
+            return;
+        }
+
+        
+
+        const result = deduplicateArr(addressArray, amountWeiArray);
+
+        const rawAddresses = result.uniqueAddresses;
+        const rawAmounts = result.uniqueAmounts;
+
+        if (rawAddresses.length === 0) {
+            updateStatus('请输入有效的批量提取地址', 'error');
+            return;
+        }
+
+        // 2. 筛选禁用名单地址和可提取地址
+        const prevent1Addresses = []; // 禁用名单1的地址
+        const prevent2Addresses = []; // 禁用名单2的地址
+        const prevent3Addresses = []; // 禁用名单3的地址
+		const prevent4Addresses = []; // 禁用名单4的地址
+        const prevent5Addresses = []; // 禁用名单5的地址
+        const prevent6Addresses = []; // 禁用名单6的地址
+        const validAddresses = []; // 可提取的有效地址
+        const validAmount = []
+
+        rawAddresses.forEach(addr => {
+            if (isInArrayIgnoreCase(addr, preventAddress)) {
+                prevent1Addresses.push(addr);
+            } else if (isInArrayIgnoreCase(addr, preventAddress2)) {
+                prevent2Addresses.push(addr);
+            } else if (isInArrayIgnoreCase(addr, preventAddress3)) {
+                prevent3Addresses.push(addr);
+            } else if (isInArrayIgnoreCase(addr, preventAddress4)) {
+                prevent4Addresses.push(addr);
+            } else if (isInArrayIgnoreCase(addr, preventAddress5)) {
+                prevent5Addresses.push(addr);
+            } else if (isInArrayIgnoreCase(addr, preventAddress6)) {
+                prevent6Addresses.push(addr);
             } else {
-                updateStatus('请安装MetaMask或其他Web3钱包', 'error');
+                validAddresses.push(addr);
+                validAmount.push(rawAmounts[rawAddresses.indexOf(addr)]);
             }
         });
 
-        // 连接钱包函数
-        async function connectWallet() {
-            if (window.ethereum) {
-                try {
-                    accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    updateWalletInfo();
-
-                    // 获取当前网络
-                    const chainId = await web3.eth.getChainId();
-                    updateNetworkInfo(chainId);
-
-                    loadContract();
-                } catch (error) {
-                    updateStatus('连接钱包失败: ' + error.message, 'error');
-                }
-            } else {
-                updateStatus('请安装MetaMask或其他Web3钱包', 'error');
-            }
+        // 3. 提示禁用名单地址，若无可提取地址则直接返回
+        let batchTip = document.getElementById('batchTip');
+        let tipMessage = '';
+        if (prevent1Addresses.length > 0) {
+            tipMessage += `禁用名单1剔除地址：${prevent1Addresses.join('、')}\n`;
+        }
+        if (prevent2Addresses.length > 0) {
+            tipMessage += `禁用名单2剔除地址：${prevent2Addresses.join('、')}\n`;
+        }
+        if (prevent3Addresses.length > 0) {
+            tipMessage += `禁用名单3剔除地址：${prevent3Addresses.join('、')}\n`;
+        }
+		if (prevent4Addresses.length > 0) {
+            tipMessage += `禁用名单4剔除地址：${prevent4Addresses.join('、')}\n`;
+        }
+        if (prevent5Addresses.length > 0) {
+            tipMessage += `禁用名单5剔除地址：${prevent5Addresses.join('、')}\n`;
+        }
+        if (prevent6Addresses.length > 0) {
+            tipMessage += `禁用名单6剔除地址：${prevent6Addresses.join('、')}\n`;
+        }
+        if (validAddresses.length === 0) {
+            tipMessage += '无有效可提取地址！';
+            batchTip.textContent = tipMessage;
+            batchTip.style.display = 'block';
+            updateStatus('批量提取失败：无有效地址', 'error');
+            return;
         }
 
-        // 更新钱包信息
-        function updateWalletInfo() {
-            if (accounts.length > 0) {
-                document.getElementById('connectWallet').textContent = '已连接';
-                document.getElementById('walletAddress').textContent = shortenAddress(accounts[0]);
-            } else {
-                document.getElementById('connectWallet').textContent = '连接钱包';
-                document.getElementById('walletAddress').textContent = '未连接钱包';
+        // 显示剔除提示
+        if (tipMessage) {
+            batchTip.textContent = tipMessage + `\n将对剩余【${validAddresses.length}个】地址进行批量提取`;
+            batchTip.style.display = 'block';
+            // 确认是否继续提取
+            let isConfirm = confirm(`已剔除禁用名单地址，是否确认对剩余【${validAddresses.length}个】地址进行批量提取？`);
+            if (!isConfirm) {
+                updateStatus('用户取消批量提取', 'info');
+                return;
             }
+        } else {
+            batchTip.style.display = 'none';
         }
 
-        // 更新网络信息
-        function updateNetworkInfo(chainId) {
-            let networkName;
-            switch (chainId) {
-                case 1: networkName = '以太坊主网'; break;
-                case 56: networkName = 'BSC主网'; break;
-                case 97: networkName = 'BSC测试网'; break;
-                default: networkName = `未知网络 (${chainId})`;
-            }
-            document.getElementById('network').textContent = networkName;
-            currentNetwork = chainId;
-        }
+        try {
+            updateStatus(`正在批量提取【${validAddresses.length}个】地址...`, 'info');
 
-        // 加载合约
-        async function loadContract() {
-            // const contractAddress = document.getElementById('contractAddressInput').value.trim();
-            // const contractAddress = document.querySelector('input[name="contractAddress"]:checked').value;
-			const contractAddress = '0xB633DfEe142e76D69b99042D1d0c7701C94b771d';
-            const usdtAddress = '0x55d398326f99059fF775485246999027B3197955';
+            // 4. 执行批量提取合约调用
+            const tx = await contract.methods.batch_withdraw(validAddresses, validAmount)
+                .send({ from: accounts[0] });
 
-            if (!contractAddress || !usdtAddress) {
-                updateStatus('请输入合约地址和USDT地址', 'error');
-                return;
-            }
+            const txHash = tx.transactionHash;
+            updateStatus(`批量提取成功! 交易哈希: ${txHash}`, 'success');
+            console.log(`批量提取交易哈希：${txHash}`);
 
-            try {
-                // 加载质押合约
-                contract = new web3.eth.Contract(contractABI, contractAddress);
-
-                // 加载USDT合约
-                usdtContract = new web3.eth.Contract(usdtABI, usdtAddress);
-
-                updateStatus('合约加载成功', 'success');
-
-                // 自动查询一些基本信息
-                getOwner();
-                getPoolBalance();
-                getTotalStaked();
-                // getRewardAddress();
-                // getForwardAddress();
-                updateForwardAddressList();
-                // 如果已输入质押者地址，自动查询
-                const stakerAddress = document.getElementById('stakerAddress').value.trim();
-                if (stakerAddress) {
-                    getStakerInfo();
-                }
-            } catch (error) {
-                updateStatus('合约加载失败: ' + error.message, 'error');
-                console.error(error);
-            }
-        }
-
-        // 查询质押者信息
-        async function getStakerInfo() {
-            if (!contract) {
-                updateStatus('请先加载合约', 'error');
-                return;
-            }
-
-            const stakerAddress = document.getElementById('stakerAddress').value.trim();
-            if (!stakerAddress) {
-                updateStatus('请输入质押者地址', 'error');
-                return;
-            }
-
-            try {
-                updateStatus('正在查询质押者信息...', 'info');
-
-                const stakerInfo = await contract.methods.stakers(stakerAddress).call();
-                const display = document.getElementById('stakerInfoDisplay');
-
-                document.getElementById('stakeAmount').textContent = formatUSDT(stakerInfo.amount);
-                document.getElementById('stakeTime').textContent = formatTimestamp(stakerInfo.stakeTime);
-                document.getElementById('rewardTime').textContent = formatTimestamp(stakerInfo.rewardTime);
-                document.getElementById('pendingReward').textContent = formatUSDT(stakerInfo.reward);
-                const user = users.find(item => item.address == stakerAddress);
-                document.getElementById('remark').textContent = user.remark;
-                display.style.display = 'block';
-                updateStatus('质押者信息查询成功', 'success');
-
-                // let favDrink = prompt("请输入备注日期?", user.remark + '-' + (new Date().getMonth() + 1) + '' + new Date().getDate());
-                // alert(favDrink)
-            } catch (error) {
-                updateStatus('查询质押者信息失败: ' + error.message, 'error');
-                console.error(error);
-            }
-        }
-
-		// 批量查询质押信息
-		async function batchQueryStakerInfo() {
-		    if (!contract) {
-		        updateStatus('请先加载合约', 'error');
-		        return;
-		    }
-		
-		    const addressText = document.getElementById('batchQueryAddresses').value.trim();
-		    if (!addressText) {
-		        updateStatus('请输入要批量查询的地址', 'error');
-		        return;
-		    }
-		
-		    // 处理地址
-		    const addressList = addressText
-		        .split(/[\n\r]/)
-		        .map(item => item.trim())
-		        .filter(item => !!item && web3.utils.isAddress(item));
-		
-		    if (addressList.length === 0) {
-		        updateStatus('没有有效地址', 'error');
-		        return;
-		    }
-		
-		    updateStatus(`正在批量查询 ${addressList.length} 个地址...`, 'info');
-		
-		    const tableBody = document.getElementById('batchQueryTableBody');
-		    tableBody.innerHTML = '';
-		
-		    for (let addr of addressList) {
-		        try {
-		            const info = await contract.methods.stakers(addr).call();
-		            const user = users.find(u => u.address && u.address.toLowerCase() === addr.toLowerCase());
-		            const remark = user ? user.remark : '';
-		
-		            const tr = document.createElement('tr');
-		            tr.innerHTML = `
-		                <td>${shortenAddress(addr)}</td>
-		                <td>${formatUSDT(info.amount)}</td>
-		                <td>${formatTimestamp(info.stakeTime)}</td>
-		                <td>${formatUSDT(info.reward)}</td>
-		                <td>${remark}</td>
-		            `;
-		            tableBody.appendChild(tr);
-		        } catch (e) {
-		            const tr = document.createElement('tr');
-		            tr.innerHTML = `
-		                <td>${shortenAddress(addr)}</td>
-		                <td colspan="4" style="color:red;">查询失败</td>
-		            `;
-		            tableBody.appendChild(tr);
-		        }
-		    }
-		
-		    document.getElementById('batchQueryResult').style.display = 'block';
-		    updateStatus(`批量查询完成，共 ${addressList.length} 条`, 'success');
-		}
-
-        // 更新转发地址列表显示
-        async function updateForwardAddressList() {
-            const forwardAddressListEl = document.getElementById('forwardAddressList');
-            forwardAddressListEl.innerHTML = '';
-            
-            const max = parseInt(document.getElementById('forwardAddressIndexMaxInput').value) || 0;
-            const forwardAddressList = []
-            for (let i = 0; i < max; i++) {
-                const forawrdAddr = await contract.methods.forwardAddressList(i).call();
-                forwardAddressList.push(forawrdAddr);
-            }
-            
-            
-            if (forwardAddressList.length === 0) {
-                forwardAddressListEl.innerHTML = '<p style="text-align: center; color: #999;">暂无转发地址</p>';
-                return;
-            }
-            
-            forwardAddressList.forEach((address, index) => {
-                const addressItem = document.createElement('div');
-                addressItem.className = 'forward-address-item';
-                
-                addressItem.innerHTML = `
-                    <div>
-                        <div style="font-weight: bold;">索引 ${index}</div>
-                        <div style="font-family: monospace; font-size: 12px;">${address}</div>
-                    </div>
-                `;
-                
-                forwardAddressListEl.appendChild(addressItem);
-            });
-        }
-
-        function extractAddresses() {
-            // 1. 获取原始文本内容
-            const originalText = document.getElementById('formatWithdrawAddresses').value.trim();
-            if (!originalText) {
-                alert('请输入要提取的文本！');
-                return;
-            }
-
-
-            const regex = /\[0x[a-fA-F0-9]+\]提取数量:\s*(\d+\.\d+)/g;
-            const resultArr = [];
-            let match;
-
-            // 遍历匹配结果
-            while ((match = regex.exec(originalText)) !== null) {
-                // 提取地址（去掉前后的[]）
-                const address = match[0].match(/0x[a-fA-F0-9]+/)[0];
-                // 提取数量
-                const amount = match[1];
-                // 拼接成 地址,数量 格式
-                resultArr.push(`${address},${amount}`);
-            }
-
-            // 将结果写入textarea，一行一条
-            document.getElementById('batchWithdrawAddresses').value = resultArr.join('\n');
-
-            // 可选：提示提取完成
-            if (resultArr.length > 0) {
-                alert(`成功提取到 ${resultArr.length} 个钱包地址！`);
-            } else {
-                alert('未提取到任何有效的ERC钱包地址！');
-            }
-        }
-
-        // 提取函数
-        async function withdraw() {
-            if (!contract) {
-                updateStatus('请先加载合约', 'error');
-                return;
-            }
-
-            const withdrawAddressInputOrg = document.getElementById('withdrawAddressInput').value.trim();
-            const withdrawAddressInputOrgs = withdrawAddressInputOrg.split(',');
-            const withdrawAddressInput = withdrawAddressInputOrgs[0].trim();
-            const withdrawAddressAmount = withdrawAddressInputOrgs[1].trim();
-            if (!withdrawAddressInput) {
-                updateStatus('请输入有效的提取地址', 'error');
-                return;
-            }
-
-
-
-
-            if (isInArrayIgnoreCase(withdrawAddressInput, preventAddress)) {
-                updateStatus('提取地址在禁用名单1', 'error');
-                let isConfirmed = confirm("提取地址在禁用名单1，您确定要提取吗？");
-                if (!isConfirmed) {
-                    return false;
-                }
-            }
-
-            if (isInArrayIgnoreCase(withdrawAddressInput, preventAddress2)) {
-                updateStatus('提取地址在禁用名单2', 'error');
-                let isConfirmed = confirm("提取地址在禁用名单2，您确定要提取吗？");
-                if (!isConfirmed) {
-                    return false;
-                }
-            }
-
-            if (isInArrayIgnoreCase(withdrawAddressInput, preventAddress3)) {
-                updateStatus('提取地址在禁用名单3', 'error');
-                let isConfirmed = confirm("提取地址在禁用名单3，您确定要提取吗？");
-                if (!isConfirmed) {
-                    return false;
-                }
-            }
-
-			if (isInArrayIgnoreCase(withdrawAddressInput, preventAddress4)) {
-                updateStatus('提取地址在禁用名单4', 'error');
-                let isConfirmed = confirm("提取地址在禁用名单4，您确定要提取吗？");
-                if (!isConfirmed) {
-                    return false;
-                }
-            }
-
-            if (isInArrayIgnoreCase(withdrawAddressInput, preventAddress5)) {
-                updateStatus('提取地址在禁用名单5', 'error');
-                let isConfirmed = confirm("提取地址在禁用名单5，您确定要提取吗？");
-                if (!isConfirmed) {
-                    return false;
-                }
-            }
-            
-
-            try {
-                updateStatus('正在处理提取...', 'info');
-                // 执行提取
-                withdrawAddressAmountWei = web3.utils.toWei(withdrawAddressAmount, 'ether'); // USDT使用6位小数
-                const tx = await contract.methods.withdraw(withdrawAddressInput, withdrawAddressAmountWei)
-                    .send({ from: accounts[0] });
-
-                updateStatus(`提款成功! 交易哈希: ${tx.transactionHash}`, 'success');
-                
-                const user = users.find(item => item.address == withdrawAddressInput)
-
-                let favDrink = prompt("请输入备注日期?", (new Date().getMonth() + 1) + '' + new Date().getDate());
-                $.ajax({
-                    url: 'https://admin.rebcommunity.xyz/admin/user/update/remark',
-                    method: 'POST',
-                    data: JSON.stringify({
-                        address: withdrawAddressInput,
-                        remark: user.remark + '-' + favDrink
-                    }),
-                    contentType: 'application/json',
-                    timeout: 10000, // 10秒超时
-                    dataType: 'json',
-                    success: function(data, status, xhr) {
-                        // 请求成功处理
-                       alert('备注成功:' + data.data + '('+ user.remark + '-' + favDrink+')');
-                    },
-                    error: function(xhr, status, error) {
-                        // 请求失败处理
-                        let errorMessage = '请求失败: ';
-                        
-                        if (status === 'timeout') {
-                            errorMessage += '请求超时，请重试';
-                        } else if (xhr.status === 0) {
-                            errorMessage += '网络连接错误';
-                        } else {
-                            errorMessage += error || '未知错误';
-                        }
-                        
-                        alert('备注失败：' + errorMessage);
-                    }
-                });
-                getPoolBalance();
-                getTotalStaked();
-            } catch (error) {
-                updateStatus('提取失败: ' + error.message, 'error');
-                console.error(error);
-            }
-        }
-
-        // 去重函数
-        function deduplicateArr(addresses, amounts) {
-            // 存储已出现的地址
-            const existAddresses = new Set();
-            // 存储去重后的结果（避免直接修改原数组导致遍历异常）
-            const newAddressArr = [];
-            const newAmountArr = [];
-
-            // 遍历数组，筛选不重复的项
-            for (let i = 0; i < addresses.length; i++) {
-                const addr = addresses[i];
-                const amount = amounts[i];
-                // 如果地址未出现过，则保留
-                if (!existAddresses.has(addr)) {
-                existAddresses.add(addr);
-                newAddressArr.push(addr);
-                newAmountArr.push(amount);
-                }
-                // 重复则跳过（即不加入新数组，等同于删除）
-            }
-
-            // 返回去重后的两个数组
-            return {
-                uniqueAddresses: newAddressArr,
-                uniqueAmounts: newAmountArr
-            };
-        }
-
-        async function batchMark() {
-            const addressText = document.getElementById('batchMarkAddresses').value.trim();
-            const batchMarkTip = document.getElementById('batchMarkTip');
-
-            if (!addressText) {
-                updateStatus('请输入批量标记地址', 'error');
-                return;
-            }
-
-            const markAddresses = [...new Set(
-                addressText
-                    .split(/[\n\r;]/)
-                    .map(item => item.trim())
-                    .filter(item => !!item)
-                    .map(item => item.split(',')[0].trim())
-                    .filter(addr => !!addr)
-            )];
-
-            if (markAddresses.length === 0) {
-                updateStatus('请输入有效的批量标记地址', 'error');
-                return;
-            }
-
+            // 5. 统一弹框获取备注日期（与单个提取一致）
             const currentDate = `${new Date().getMonth() + 1}${new Date().getDate()}`;
             let remarkDate = prompt("请输入备注日期?", currentDate);
             if (!remarkDate) {
-                remarkDate = currentDate;
+                remarkDate = currentDate; // 用户取消输入时使用默认日期
             }
 
+            // 6. 循环调用标记接口，为每个有效提取地址追加备注
             let successCount = 0;
             let failAddresses = [];
 
-            updateStatus(`正在批量标记【${markAddresses.length}个】地址...`, 'info');
-            batchMarkTip.textContent = `正在批量标记【${markAddresses.length}个】地址...`;
-            batchMarkTip.style.display = 'block';
-
-            for (let i = 0; i < markAddresses.length; i++) {
-                const markAddr = markAddresses[i];
+            for (let i = 0; i < validAddresses.length; i++) {
+                const withdrawAddr = validAddresses[i];
                 try {
-                    const user = users.find(item => item.address && item.address.toLowerCase() === markAddr.toLowerCase());
+                    // 查找对应用户
+                    const user = users.find(item => item.address === withdrawAddr);
                     if (!user) {
-                        failAddresses.push(`${markAddr}（未找到用户信息）`);
+                        failAddresses.push(`${withdrawAddr}（未找到用户信息）`);
                         continue;
                     }
 
-                    const newRemark = `${user.remark || ''}-${remarkDate}`;
+                    // 构造新备注
+                    const newRemark = `${user.remark}-${remarkDate}`;
 
+                    // 异步调用更新备注接口（与单个提取一致）
                     await new Promise((resolve, reject) => {
                         $.ajax({
                             url: 'https://admin.rebcommunity.xyz/admin/user/update/remark',
                             method: 'POST',
                             data: JSON.stringify({
-                                address: markAddr,
+                                address: withdrawAddr,
                                 remark: newRemark
                             }),
                             contentType: 'application/json',
@@ -1543,456 +1785,231 @@
                                 resolve(data);
                             },
                             error: function (xhr, status, error) {
-                                reject({ status, error, address: markAddr });
+                                reject({ status, error, address: withdrawAddr });
                             }
                         });
                     });
 
-                    user.remark = newRemark;
                     successCount++;
-                    console.log(`地址${markAddr}备注标记成功`);
+                    console.log(`地址${withdrawAddr}备注标记成功`);
                 } catch (error) {
-                    failAddresses.push(`${markAddr}（${error.error || '未知错误'}）`);
-                    console.error(`地址${markAddr}备注标记失败：`, error);
+                    failAddresses.push(`${withdrawAddr}（${error.error || '未知错误'}）`);
+                    console.error(`地址${withdrawAddr}备注标记失败：`, error);
                 }
             }
 
-            let markTip = `批量标记完成：成功${successCount}个，失败${failAddresses.length}个`;
+            // 7. 提示批量标记结果
+            let markTip = `批量标记完成：成功${successCount}个，失败${failAddresses.length}个\n`;
             if (failAddresses.length > 0) {
-                markTip += `\n失败地址：${failAddresses.join('、')}`;
+                markTip += `失败地址：${failAddresses.join('、')}`;
             }
-
-            batchMarkTip.textContent = markTip;
-            batchMarkTip.style.display = 'block';
             alert(markTip);
-            updateStatus(markTip, failAddresses.length > 0 ? 'error' : 'success');
+
+            // 8. 刷新池余额和总质押量
+            getPoolBalance();
+            getTotalStaked();
+
+        } catch (error) {
+            updateStatus('批量提取失败: ' + error.message, 'error');
+            console.error('批量提取异常：', error);
+            // 隐藏批量提示
+            batchTip.style.display = 'none';
+        }
+    }
+
+    // 设置奖励地址
+    async function setRewardAddress() {
+        if (!contract) {
+            updateStatus('请先加载合约', 'error');
+            return;
         }
 
-        // 批量提取函数
-        async function batchWithdraw() {
-            if (!contract) {
-                updateStatus('请先加载合约', 'error');
-                return;
-            }
+        const rewardAddress = document.getElementById('rewardAddressInput').value.trim();
+        if (!rewardAddress || !web3.utils.isAddress(rewardAddress)) {
+            updateStatus('请输入有效的奖励地址', 'error');
+            return;
+        }
 
-            // 1. 获取文本域中的地址，处理格式（换行分割、去重、去空）
-            const addressText = document.getElementById('batchWithdrawAddresses').value.trim();
-            if (!addressText) {
-                updateStatus('请输入批量提取地址', 'error');
-                return;
-            }
+        try {
+            updateStatus('正在设置奖励地址...', 'info');
 
-            // 分割地址并处理（去空、去重）
-            let rawAddressAmount  = addressText.split(/[\n\r;]/).map(item => item.trim()).filter(item => !!item);
-            rawAddressAmount = [...new Set(rawAddressAmount)]; // 去重
+            await contract.methods.setRewardAddress(rewardAddress)
+                .send({ from: accounts[0] });
 
-            const addressArray = []; // 最终的地址数组
-            const amountWeiArray = []; // 最终的Wei格式金额数组
-            let isFormatError = false; // 格式错误标记
+            updateStatus('奖励地址设置成功', 'success');
 
-            rawAddressAmount.forEach(item => {
-                // 按英文逗号分割地址和金额（核心：适配「地址,金额」的核心分隔符）
-                const [address, amountStr] = item.split(',').map(ele => ele.trim());
+            // 刷新奖励地址显示
+            getRewardAddress();
+        } catch (error) {
+            updateStatus('设置奖励地址失败: ' + error.message, 'error');
+            console.error(error);
+        }
+    }
 
-                // 1. 校验：必须是「地址,金额」成对存在，缺一不可
-                if (!address || !amountStr) {
-                    updateStatus(`格式错误："${item}" 需遵循「地址,金额」格式，地址和金额缺一不可`, 'error');
-                    isFormatError = true;
-                    return;
-                }
+    // 设置转发地址
+    async function setForwardAddress() {
+        if (!contract) {
+            updateStatus('请先加载合约', 'error');
+            return;
+        }
 
-                // 2. 校验：金额必须是合法数字（支持整数/浮点数，如1、0.5、10.25）
-                const amountNum = Number(amountStr);
-                if (isNaN(amountNum) || amountNum <= 0) {
-                    updateStatus(`金额错误："${item}" 中的金额"${amountStr}"不是合法的正数`, 'error');
-                    isFormatError = true;
-                    return;
-                }
+        const forwardAddress = document.getElementById('forwardAddressInput').value.trim();
+        if (!forwardAddress || !web3.utils.isAddress(forwardAddress)) {
+            updateStatus('请输入有效的转发地址', 'error');
+            return;
+        }
 
-                // 3. 金额转Wei（使用ether单位，1 ether = 10^18 Wei，Gas相关可换gwei，根据业务调整）
-                // 优先传字符串避免浮点数精度丢失，toWei返回字符串类型（链上交易推荐字符串）
-                let amountWei;
-                try {
-                    amountWei = web3.utils.toWei(amountStr, 'ether'); // 核心：web3.js转Wei
-                } catch (err) {
-                    updateStatus(`金额转换失败："${item}" 中的金额转换Wei出错，原因：${err.message}`, 'error');
-                    isFormatError = true;
-                    return;
-                }
+        try {
+            updateStatus('正在设置转发地址...', 'info');
 
-                // 4. 校验通过，推入对应数组（保证地址和金额数组索引一一对应）
-                addressArray.push(address);
-                amountWeiArray.push(amountWei);
-            });
+            await contract.methods.setForwardAddress(forwardAddress)
+                .send({ from: accounts[0] });
 
-            // 最终全局校验
-            if (isFormatError) {
-                return; // 存在格式错误，终止后续处理
-            }
-            if (addressArray.length === 0) {
-                updateStatus('请输入有效的「地址,金额」格式数据', 'error');
-                return;
-            }
-            // 校验：地址数组和金额数组长度必须一致（兜底保障）
-            if (addressArray.length !== amountWeiArray.length) {
-                updateStatus('地址与金额数量不匹配，请检查输入格式', 'error');
-                return;
-            }
+            updateStatus('转发地址设置成功', 'success');
 
-            
+            // 刷新转发地址显示
+            getForwardAddress();
+        } catch (error) {
+            updateStatus('设置转发地址失败: ' + error.message, 'error');
+            console.error(error);
+        }
+    }
 
-            const result = deduplicateArr(addressArray, amountWeiArray);
 
-            const rawAddresses = result.uniqueAddresses;
-            const rawAmounts = result.uniqueAmounts;
+    // 设置转发地址列表
+    async function setForwardAddressList() {
+        const forwardAddressIndexInput = document.getElementById('forwardAddressIndexInput');
+        const newForwardAddressInput = document.getElementById('newForwardAddressInput');
+        const index = parseInt(forwardAddressIndexInput.value);
+        const newAddress = newForwardAddressInput.value.trim();
+        
+        if (isNaN(index) || index < 0) {
+            updateStatus('请输入有效的索引', 'error');
+            return;
+        }
+        
+        if (!newAddress) {
+            updateStatus('请输入新地址', 'error');
+            return;
+        }
 
-            if (rawAddresses.length === 0) {
-                updateStatus('请输入有效的批量提取地址', 'error');
-                return;
-            }
+        try {
+            updateStatus('正在设置转发地址列表...', 'info');
 
-            // 2. 筛选禁用名单地址和可提取地址
-            const prevent1Addresses = []; // 禁用名单1的地址
-            const prevent2Addresses = []; // 禁用名单2的地址
-            const prevent3Addresses = []; // 禁用名单3的地址
-			const prevent4Addresses = []; // 禁用名单4的地址
-            const prevent5Addresses = []; // 禁用名单5的地址
-            const validAddresses = []; // 可提取的有效地址
-            const validAmount = []
+            await contract.methods.setForwardAddressList(index, newAddress)
+                .send({ from: accounts[0] });
 
-            rawAddresses.forEach(addr => {
-                if (isInArrayIgnoreCase(addr, preventAddress)) {
-                    prevent1Addresses.push(addr);
-                } else if (isInArrayIgnoreCase(addr, preventAddress2)) {
-                    prevent2Addresses.push(addr);
-                } else if (isInArrayIgnoreCase(addr, preventAddress3)) {
-                    prevent3Addresses.push(addr);
-                } else if (isInArrayIgnoreCase(addr, preventAddress4)) {
-                    prevent4Addresses.push(addr);
-                } else if (isInArrayIgnoreCase(addr, preventAddress5)) {
-                    prevent5Addresses.push(addr);
-                } else {
-                    validAddresses.push(addr);
-                    validAmount.push(rawAmounts[rawAddresses.indexOf(addr)]);
-                }
-            });
+            updateStatus('转发地址列表设置成功', 'success');
 
-            // 3. 提示禁用名单地址，若无可提取地址则直接返回
-            let batchTip = document.getElementById('batchTip');
-            let tipMessage = '';
-            if (prevent1Addresses.length > 0) {
-                tipMessage += `禁用名单1剔除地址：${prevent1Addresses.join('、')}\n`;
-            }
-            if (prevent2Addresses.length > 0) {
-                tipMessage += `禁用名单2剔除地址：${prevent2Addresses.join('、')}\n`;
-            }
-            if (prevent3Addresses.length > 0) {
-                tipMessage += `禁用名单3剔除地址：${prevent3Addresses.join('、')}\n`;
-            }
-			if (prevent4Addresses.length > 0) {
-                tipMessage += `禁用名单4剔除地址：${prevent4Addresses.join('、')}\n`;
-            }
-            if (prevent5Addresses.length > 0) {
-                tipMessage += `禁用名单5剔除地址：${prevent5Addresses.join('、')}\n`;
-            }
-            if (validAddresses.length === 0) {
-                tipMessage += '无有效可提取地址！';
-                batchTip.textContent = tipMessage;
-                batchTip.style.display = 'block';
-                updateStatus('批量提取失败：无有效地址', 'error');
-                return;
-            }
+            // 刷新转发地址显示
+            updateForwardAddressList();
+        } catch (error) {
+            updateStatus('设置转发地址列表失败: ' + error.message, 'error');
+            console.error(error);
+        }
+    }
 
-            // 显示剔除提示
-            if (tipMessage) {
-                batchTip.textContent = tipMessage + `\n将对剩余【${validAddresses.length}个】地址进行批量提取`;
-                batchTip.style.display = 'block';
-                // 确认是否继续提取
-                let isConfirm = confirm(`已剔除禁用名单地址，是否确认对剩余【${validAddresses.length}个】地址进行批量提取？`);
-                if (!isConfirm) {
-                    updateStatus('用户取消批量提取', 'info');
-                    return;
-                }
+    // 查询池余额
+    async function getPoolBalance() {
+        if (!contract) {
+            return;
+        }
+
+        try {
+			const contractAddress = '0xB633DfEe142e76D69b99042D1d0c7701C94b771d';
+            const balance = await usdtContract.methods.balanceOf(contractAddress).call();
+            document.getElementById('poolBalance').textContent = formatUSDT(balance);
+        } catch (error) {
+            console.error('查询池余额失败:', error);
+        }
+    }
+
+    // 查询总质押量
+    async function getTotalStaked() {
+        if (!contract) {
+            return;
+        }
+
+        try {
+            const total = await contract.methods.totalStaked().call();
+            document.getElementById('totalStaked').textContent = formatUSDT(total);
+        } catch (error) {
+            console.error('查询总质押量失败:', error);
+        }
+    }
+    // 查询合约所有者
+    async function getOwner() {
+        if (!contract) {
+            return;
+        }
+        try {
+            const owner = await contract.methods.owner().call();
+            console.log(owner, accounts[0])
+            if (owner.toLowerCase() == accounts[0].toLowerCase()) {
+                document.getElementById('manageBox').style.display = "block";
             } else {
-                batchTip.style.display = 'none';
+                document.getElementById('manageBox').style.display = "none";
             }
+            document.getElementById('contractOwner').textContent = shortenAddress(owner);
+        } catch (error) {
+            console.error('查询合约所有者失败:', error);
+        }
+    }
 
-            try {
-                updateStatus(`正在批量提取【${validAddresses.length}个】地址...`, 'info');
-
-                // 4. 执行批量提取合约调用
-                const tx = await contract.methods.batch_withdraw(validAddresses, validAmount)
-                    .send({ from: accounts[0] });
-
-                const txHash = tx.transactionHash;
-                updateStatus(`批量提取成功! 交易哈希: ${txHash}`, 'success');
-                console.log(`批量提取交易哈希：${txHash}`);
-
-                // 5. 统一弹框获取备注日期（与单个提取一致）
-                const currentDate = `${new Date().getMonth() + 1}${new Date().getDate()}`;
-                let remarkDate = prompt("请输入备注日期?", currentDate);
-                if (!remarkDate) {
-                    remarkDate = currentDate; // 用户取消输入时使用默认日期
-                }
-
-                // 6. 循环调用标记接口，为每个有效提取地址追加备注
-                let successCount = 0;
-                let failAddresses = [];
-
-                for (let i = 0; i < validAddresses.length; i++) {
-                    const withdrawAddr = validAddresses[i];
-                    try {
-                        // 查找对应用户
-                        const user = users.find(item => item.address === withdrawAddr);
-                        if (!user) {
-                            failAddresses.push(`${withdrawAddr}（未找到用户信息）`);
-                            continue;
-                        }
-
-                        // 构造新备注
-                        const newRemark = `${user.remark}-${remarkDate}`;
-
-                        // 异步调用更新备注接口（与单个提取一致）
-                        await new Promise((resolve, reject) => {
-                            $.ajax({
-                                url: 'https://admin.rebcommunity.xyz/admin/user/update/remark',
-                                method: 'POST',
-                                data: JSON.stringify({
-                                    address: withdrawAddr,
-                                    remark: newRemark
-                                }),
-                                contentType: 'application/json',
-                                timeout: 10000,
-                                dataType: 'json',
-                                success: function (data) {
-                                    resolve(data);
-                                },
-                                error: function (xhr, status, error) {
-                                    reject({ status, error, address: withdrawAddr });
-                                }
-                            });
-                        });
-
-                        successCount++;
-                        console.log(`地址${withdrawAddr}备注标记成功`);
-                    } catch (error) {
-                        failAddresses.push(`${withdrawAddr}（${error.error || '未知错误'}）`);
-                        console.error(`地址${withdrawAddr}备注标记失败：`, error);
-                    }
-                }
-
-                // 7. 提示批量标记结果
-                let markTip = `批量标记完成：成功${successCount}个，失败${failAddresses.length}个\n`;
-                if (failAddresses.length > 0) {
-                    markTip += `失败地址：${failAddresses.join('、')}`;
-                }
-                alert(markTip);
-
-                // 8. 刷新池余额和总质押量
-                getPoolBalance();
-                getTotalStaked();
-
-            } catch (error) {
-                updateStatus('批量提取失败: ' + error.message, 'error');
-                console.error('批量提取异常：', error);
-                // 隐藏批量提示
-                batchTip.style.display = 'none';
-            }
+    // 查询奖励地址
+    async function getRewardAddress() {
+        if (!contract) {
+            return;
         }
 
-        // 设置奖励地址
-        async function setRewardAddress() {
-            if (!contract) {
-                updateStatus('请先加载合约', 'error');
-                return;
-            }
+        try {
+            const rewardAddr = await contract.methods.rewardAddress().call();
+            document.getElementById('rewardAddress').textContent = shortenAddress(rewardAddr);
+        } catch (error) {
+            console.error('查询奖励地址失败:', error);
+        }
+    }
 
-            const rewardAddress = document.getElementById('rewardAddressInput').value.trim();
-            if (!rewardAddress || !web3.utils.isAddress(rewardAddress)) {
-                updateStatus('请输入有效的奖励地址', 'error');
-                return;
-            }
-
-            try {
-                updateStatus('正在设置奖励地址...', 'info');
-
-                await contract.methods.setRewardAddress(rewardAddress)
-                    .send({ from: accounts[0] });
-
-                updateStatus('奖励地址设置成功', 'success');
-
-                // 刷新奖励地址显示
-                getRewardAddress();
-            } catch (error) {
-                updateStatus('设置奖励地址失败: ' + error.message, 'error');
-                console.error(error);
-            }
+    // 查询转发地址
+    async function getForwardAddress() {
+        if (!contract) {
+            return;
         }
 
-        // 设置转发地址
-        async function setForwardAddress() {
-            if (!contract) {
-                updateStatus('请先加载合约', 'error');
-                return;
-            }
-
-            const forwardAddress = document.getElementById('forwardAddressInput').value.trim();
-            if (!forwardAddress || !web3.utils.isAddress(forwardAddress)) {
-                updateStatus('请输入有效的转发地址', 'error');
-                return;
-            }
-
-            try {
-                updateStatus('正在设置转发地址...', 'info');
-
-                await contract.methods.setForwardAddress(forwardAddress)
-                    .send({ from: accounts[0] });
-
-                updateStatus('转发地址设置成功', 'success');
-
-                // 刷新转发地址显示
-                getForwardAddress();
-            } catch (error) {
-                updateStatus('设置转发地址失败: ' + error.message, 'error');
-                console.error(error);
-            }
+        try {
+            const forwardAddr = await contract.methods.forwardAddress().call();
+            document.getElementById('forwardAddress').textContent = shortenAddress(forwardAddr);
+        } catch (error) {
+            console.error('查询转发地址失败:', error);
         }
+    }
 
+    // 更新状态信息
+    function updateStatus(message, type) {
+        const statusElement = document.getElementById('status');
+        statusElement.textContent = message;
+        statusElement.className = type;
+    }
 
-        // 设置转发地址列表
-        async function setForwardAddressList() {
-            const forwardAddressIndexInput = document.getElementById('forwardAddressIndexInput');
-            const newForwardAddressInput = document.getElementById('newForwardAddressInput');
-            const index = parseInt(forwardAddressIndexInput.value);
-            const newAddress = newForwardAddressInput.value.trim();
-            
-            if (isNaN(index) || index < 0) {
-                updateStatus('请输入有效的索引', 'error');
-                return;
-            }
-            
-            if (!newAddress) {
-                updateStatus('请输入新地址', 'error');
-                return;
-            }
+    // 缩短地址显示
+    function shortenAddress(address) {
+        if (!address) return '';
+        return address.substring(0, 6) + '...' + address.substring(address.length - 4);
+    }
 
-            try {
-                updateStatus('正在设置转发地址列表...', 'info');
+    // 格式化时间戳
+    function formatTimestamp(timestamp) {
+        if (!timestamp || timestamp === '0') return '-';
+        const date = new Date(timestamp * 1000);
+        return date.toLocaleString();
+    }
 
-                await contract.methods.setForwardAddressList(index, newAddress)
-                    .send({ from: accounts[0] });
-
-                updateStatus('转发地址列表设置成功', 'success');
-
-                // 刷新转发地址显示
-                updateForwardAddressList();
-            } catch (error) {
-                updateStatus('设置转发地址列表失败: ' + error.message, 'error');
-                console.error(error);
-            }
-        }
-
-        // 查询池余额
-        async function getPoolBalance() {
-            if (!contract) {
-                return;
-            }
-
-            try {
-				const contractAddress = '0xB633DfEe142e76D69b99042D1d0c7701C94b771d';
-                const balance = await usdtContract.methods.balanceOf(contractAddress).call();
-                document.getElementById('poolBalance').textContent = formatUSDT(balance);
-            } catch (error) {
-                console.error('查询池余额失败:', error);
-            }
-        }
-
-        // 查询总质押量
-        async function getTotalStaked() {
-            if (!contract) {
-                return;
-            }
-
-            try {
-                const total = await contract.methods.totalStaked().call();
-                document.getElementById('totalStaked').textContent = formatUSDT(total);
-            } catch (error) {
-                console.error('查询总质押量失败:', error);
-            }
-        }
-        // 查询合约所有者
-        async function getOwner() {
-            if (!contract) {
-                return;
-            }
-            try {
-                const owner = await contract.methods.owner().call();
-                console.log(owner, accounts[0])
-                if (owner.toLowerCase() == accounts[0].toLowerCase()) {
-                    document.getElementById('manageBox').style.display = "block";
-                } else {
-                    document.getElementById('manageBox').style.display = "none";
-                }
-                document.getElementById('contractOwner').textContent = shortenAddress(owner);
-            } catch (error) {
-                console.error('查询合约所有者失败:', error);
-            }
-        }
-
-        // 查询奖励地址
-        async function getRewardAddress() {
-            if (!contract) {
-                return;
-            }
-
-            try {
-                const rewardAddr = await contract.methods.rewardAddress().call();
-                document.getElementById('rewardAddress').textContent = shortenAddress(rewardAddr);
-            } catch (error) {
-                console.error('查询奖励地址失败:', error);
-            }
-        }
-
-        // 查询转发地址
-        async function getForwardAddress() {
-            if (!contract) {
-                return;
-            }
-
-            try {
-                const forwardAddr = await contract.methods.forwardAddress().call();
-                document.getElementById('forwardAddress').textContent = shortenAddress(forwardAddr);
-            } catch (error) {
-                console.error('查询转发地址失败:', error);
-            }
-        }
-
-        // 更新状态信息
-        function updateStatus(message, type) {
-            const statusElement = document.getElementById('status');
-            statusElement.textContent = message;
-            statusElement.className = type;
-        }
-
-        // 缩短地址显示
-        function shortenAddress(address) {
-            if (!address) return '';
-            return address.substring(0, 6) + '...' + address.substring(address.length - 4);
-        }
-
-        // 格式化时间戳
-        function formatTimestamp(timestamp) {
-            if (!timestamp || timestamp === '0') return '-';
-            const date = new Date(timestamp * 1000);
-            return date.toLocaleString();
-        }
-
-        // 格式化USDT金额
-        function formatUSDT(amount) {
-            if (!amount) return '0';
-            return (amount / 1e18).toFixed(2); // 假设USDT有6位小数
-        }
-    </script>
+    // 格式化USDT金额
+    function formatUSDT(amount) {
+        if (!amount) return '0';
+        return (amount / 1e18).toFixed(2); // 假设USDT有6位小数
+    }
+</script>
 </body>
 
 </html>
