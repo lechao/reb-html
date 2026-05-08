@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BSC 合约交互面板 (Web3.js)</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+   <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+  <style>
+    body{background:#f8f9fa;padding:20px;}
+    .card{margin-bottom:18px;border-radius:8px;box-shadow:0 1px 4px #00000015;}
+    .connected{color:#198754;font-weight:bold;}
+    .disconnected{color:#dc3545;font-weight:bold;}
+    pre{white-space:pre-wrap;word-break:break-all;}
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h3 class="text-center mb-4">BSC 合约交互面板 (Web3.js)</h3>
+  <p class="text-center text-break">合约：0xc0A210fe8AFe0476d54341a708e55F0383bf4202</p>
+
+  <!-- 钱包连接 -->
+  <div class="card p-3">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <span id="walletStatus" class="disconnected">未连接钱包</span>
+        <div id="walletAddr" class="small mt-1"></div>
+      </div>
+      <button id="connectBtn" class="btn btn-primary">连接钱包</button>
+    </div>
+  </div>
+
+  <!-- 合约基础信息 -->
+  <div class="card">
+    <div class="card-header">合约基础信息</div>
+    <div class="card-body">
+      <button id="getBaseInfo" class="btn btn-sm btn-info mb-3">读取信息</button>
+      <div class="row g-2">
+        <div class="col-md-6"><p>合约拥有者：<span id="txtOwner">-</span></p></div>
+        <div class="col-md-6"><p>冷钱包地址：<span id="txtColdWallet">-</span></p></div>
+        <div class="col-md-6"><p>转账操作员：<span id="txtTransferOp">-</span></p></div>
+        <div class="col-md-6"><p>提现操作员：<span id="txtWithdrawOp">-</span></p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 余额查询 -->
+  <div class="card">
+    <div class="card-header">合约代币余额查询</div>
+    <div class="card-body">
+      <div class="mb-2">
+        <input type="text" id="tokenBalanceAddr" class="form-control" placeholder="代币合约地址"/>
+      </div>
+      <button id="btnQueryBalance" class="btn btn-sm btn-success">查询余额</button>
+      <p class="mt-2">合约余额：<span id="txtBalance">-</span> <span id="txtBalanceEther"></span></p>
+    </div>
+  </div>
+
+  <!-- 订单查询 -->
+  <div class="card">
+    <div class="card-header">订单信息查询</div>
+    <div class="card-body">
+      <div class="mb-2">
+        <input type="number" id="inputOrderId" class="form-control" placeholder="输入 OrderId"/>
+      </div>
+      <button id="btnQueryOrder" class="btn btn-sm btn-secondary">查询订单</button>
+      <div class="mt-2"><pre id="orderResult"></pre></div>
+    </div>
+  </div>
+
+  <!-- 处理支付 processPayment -->
+  <div class="card">
+    <div class="card-header bg-primary text-white">处理支付</div>
+    <div class="card-body">
+      <div class="mb-2"><input type="text" id="payToken" class="form-control" placeholder="Token地址"/></div>
+      <div class="mb-2"><input type="text" id="payAmount" class="form-control" placeholder="金额(ether)"/></div>
+      <div class="mb-2"><input type="number" id="payOrderId" class="form-control" placeholder="OrderId"/></div>
+      <button id="btnPay" class="btn btn-sm btn-primary">执行支付</button>
+    </div>
+  </div>
+
+  <!-- 批量转账 batchTransfer -->
+  <div class="card">
+    <div class="card-header bg-warning">批量转账</div>
+    <div class="card-body">
+      <div class="mb-2"><input type="text" id="batchTokens" class="form-control" placeholder="代币数组,逗号分隔"/></div>
+      <div class="mb-2"><input type="text" id="batchRecipients" class="form-control" placeholder="接收地址数组,逗号分隔"/></div>
+      <div class="mb-2"><input type="text" id="batchAmounts" class="form-control" placeholder="金额数组,逗号分隔(ether)"/></div>
+      <button id="btnBatchTransfer" class="btn btn-sm btn-warning">执行批量转账</button>
+    </div>
+  </div>
+
+  <!-- 提现 withdraw -->
+  <div class="card">
+    <div class="card-header bg-success text-white">提现</div>
+    <div class="card-body">
+      <div class="mb-2 d-flex gap-2">
+        <input type="text" id="withdrawToken" class="form-control" placeholder="Token地址"/>
+        <button id="btnFillUSDT" class="btn btn-outline-primary">填充USDT</button>
+      </div>
+      <div class="mb-2"><input type="text" id="withdrawAmount" class="form-control" placeholder="金额(ether)"/></div>
+      <div class="mb-2"><input type="text" id="withdrawTo" class="form-control" placeholder="接收地址"/></div>
+      <button id="btnWithdraw" class="btn btn-sm btn-success">执行提现</button>
+    </div>
+  </div>
+
+  <!-- 管理员设置 -->
+  <div class="card">
+    <div class="card-header bg-danger text-white">管理员配置</div>
+    <div class="card-body">
+      <div class="mb-2">
+        <input type="text" id="newColdWallet" class="form-control" placeholder="新冷钱包地址"/>
+        <button id="btnSetColdWallet" class="btn btn-sm btn-danger mt-2">设置冷钱包</button>
+      </div>
+      <hr/>
+      <div class="mb-2">
+        <input type="text" id="newTransferOp" class="form-control" placeholder="新转账操作员"/>
+        <button id="btnSetTransferOp" class="btn btn-sm btn-danger mt-2">设置转账操作员</button>
+      </div>
+      <hr/>
+      <div class="mb-2">
+        <input type="text" id="newWithdrawOp" class="form-control" placeholder="新提现操作员"/>
+        <button id="btnSetWithdrawOp" class="btn btn-sm btn-danger mt-2">设置提现操作员</button>
+      </div>
+      <hr/>
+      <div class="mb-2">
+        <input type="text" id="newOwner" class="form-control" placeholder="新拥有者地址"/>
+        <button id="btnTransferOwner" class="btn btn-sm btn-danger mt-2">转移合约所有权</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ========== 配置 ==========
+const CONTRACT_ADDR = "0xc0A210fe8AFe0476d54341a708e55F0383bf4202";
+const BSC_CHAIN_ID = 56;
+const USDT_ADDR = "0x55d398326f99059ff775485246999027b3197955";
+
+// 完整ABI
+const ABI = [
+	{
+		"inputs": [{"internalType":"address","name":"initialOwner","type":"address"}],
+		"stateMutability":"nonpayable","type":"constructor"
+	},
+	{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"OwnableInvalidOwner","type":"error"},
+	{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"OwnableUnauthorizedAccount","type":"error"},
+	{
+		"anonymous":false,"inputs":[
+			{"indexed":true,"internalType":"address","name":"executor","type":"address"},
+			{"indexed":false,"internalType":"uint256","name":"transferCount","type":"uint256"},
+			{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}
+		],"name":"BatchTransferExecuted","type":"event"
+	},
+	{
+		"anonymous":false,"inputs":[
+			{"indexed":true,"internalType":"address","name":"oldWallet","type":"address"},
+			{"indexed":true,"internalType":"address","name":"newWallet","type":"address"}
+		],"name":"ColdWalletSet","type":"event"
+	},
+	{
+		"anonymous":false,"inputs":[
+			{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},
+			{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}
+		],"name":"OwnershipTransferred","type":"event"
+	},
+	{
+		"anonymous":false,"inputs":[
+			{"indexed":true,"internalType":"address","name":"payer","type":"address"},
+			{"indexed":true,"internalType":"address","name":"token","type":"address"},
+			{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},
+			{"indexed":false,"internalType":"uint256","name":"orderId","type":"uint256"},
+			{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}
+		],"name":"PaymentProcessed","type":"event"
+	},
+	{
+		"anonymous":false,"inputs":[
+			{"indexed":true,"internalType":"address","name":"oldOperator","type":"address"},
+			{"indexed":true,"internalType":"address","name":"newOperator","type":"address"}
+		],"name":"TransferOperatorSet","type":"event"
+	},
+	{
+		"anonymous":false,"inputs":[
+			{"indexed":true,"internalType":"address","name":"executor","type":"address"},
+			{"indexed":true,"internalType":"address","name":"token","type":"address"},
+			{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},
+			{"indexed":true,"internalType":"address","name":"to","type":"address"},
+			{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}
+		],"name":"WithdrawExecuted","type":"event"
+	},
+	{
+		"anonymous":false,"inputs":[
+			{"indexed":true,"internalType":"address","name":"oldOperator","type":"address"},
+			{"indexed":true,"internalType":"address","name":"newOperator","type":"address"}
+		],"name":"WithdrawOperatorSet","type":"event"
+	},
+	{
+		"inputs":[
+			{"internalType":"address[]","name":"tokens","type":"address[]"},
+			{"internalType":"address[]","name":"recipients","type":"address[]"},
+			{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}
+		],"name":"batchTransfer","outputs":[],"stateMutability":"nonpayable","type":"function"
+	},
+	{"inputs":[],"name":"coldWallet","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+	{"inputs":[{"internalType":"address","name":"token","type":"address"}],"name":"getContractBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+	{"inputs":[{"internalType":"address[]","name":"tokens","type":"address[]"}],"name":"getContractBalances","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},
+	{"inputs":[],"name":"getOperators","outputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+	{"inputs":[{"internalType":"uint256","name":"orderId","type":"uint256"}],"name":"getOrder","outputs":[{"components":[{"internalType":"address","name":"payer","type":"address"},{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"orderId","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"bool","name":"processed","type":"bool"}],"internalType":"struct PaymentProcessor.Order","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},
+	{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"orders","outputs":[{"internalType":"address","name":"payer","type":"address"},{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"orderId","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"bool","name":"processed","type":"bool"}],"stateMutability":"view","type":"function"},
+	{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+	{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"orderId","type":"uint256"}],"name":"processPayment","outputs":[],"stateMutability":"nonpayable","type":"function"},
+	{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},
+	{"inputs":[{"internalType":"address","name":"newColdWallet","type":"address"}],"name":"setColdWallet","outputs":[],"stateMutability":"nonpayable","type":"function"},
+	{"inputs":[{"internalType":"address","name":"newOperator","type":"address"}],"name":"setTransferOperator","outputs":[],"stateMutability":"nonpayable","type":"function"},
+	{"inputs":[{"internalType":"address","name":"newOperator","type":"address"}],"name":"setWithdrawOperator","outputs":[],"stateMutability":"nonpayable","type":"function"},
+	{"inputs":[],"name":"transferOperator","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+	{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},
+	{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"address","name":"to","type":"address"}],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},
+	{"inputs":[],"name":"withdrawOperator","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}
+];
+
+let web3;
+let contract;
+let accounts = [];
+
+// 填充USDT地址
+document.getElementById('btnFillUSDT').addEventListener('click', () => {
+  document.getElementById('withdrawToken').value = USDT_ADDR;
+});
+
+// 连接钱包
+document.getElementById('connectBtn').addEventListener('click', async () => {
+  if (!window.ethereum) return alert("请安装 MetaMask");
+  try {
+    web3 = new Web3(window.ethereum);
+    accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    contract = new web3.eth.Contract(ABI, CONTRACT_ADDR);
+
+    document.getElementById('walletStatus').innerText = "已连接";
+    document.getElementById('walletStatus').className = "connected";
+    document.getElementById('walletAddr').innerText = accounts[0];
+
+    const chainId = await web3.eth.getChainId();
+    if (Number(chainId) !== BSC_CHAIN_ID) {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: '0x38' }],
+      });
+    }
+  } catch (e) {
+    console.error(e);
+    alert("连接失败：" + e.message);
+  }
+});
+
+// 读取基础信息
+document.getElementById('getBaseInfo').addEventListener('click', async () => {
+  if (!contract) return alert("先连接钱包");
+  try {
+    const o = await contract.methods.owner().call();
+    const cw = await contract.methods.coldWallet().call();
+    const top = await contract.methods.transferOperator().call();
+    const wop = await contract.methods.withdrawOperator().call();
+
+    document.getElementById('txtOwner').innerText = o;
+    document.getElementById('txtColdWallet').innerText = cw;
+    document.getElementById('txtTransferOp').innerText = top;
+    document.getElementById('txtWithdrawOp').innerText = wop;
+  } catch (e) {
+    alert("读取失败：" + e.message);
+  }
+});
+
+// 查询余额
+document.getElementById('btnQueryBalance').addEventListener('click', async () => {
+  if (!contract) return alert("先连接钱包");
+  const token = document.getElementById('tokenBalanceAddr').value.trim();
+  if (!token) return alert("输入代币地址");
+  try {
+    const bal = await contract.methods.getContractBalance(token).call();
+    document.getElementById('txtBalance').innerText = bal.toString();
+    document.getElementById('txtBalanceEther').innerText = `(${web3.utils.fromWei(bal, 'ether')} ether)`;
+  } catch (e) {
+    alert("查询失败：" + e.message);
+  }
+});
+
+// 查询订单
+document.getElementById('btnQueryOrder').addEventListener('click', async () => {
+  if (!contract) return alert("先连接钱包");
+  const oid = document.getElementById('inputOrderId').value;
+  if (!oid) return alert("输入OrderId");
+  try {
+    const order = await contract.methods.getOrder(oid).call();
+    document.getElementById('orderResult').innerText = JSON.stringify(order, null, 2);
+  } catch (e) {
+    alert("查询失败：" + e.message);
+  }
+});
+
+// 处理支付
+document.getElementById('btnPay').addEventListener('click', async () => {
+  if (!contract) return alert("先连接钱包");
+  const token = document.getElementById('payToken').value.trim();
+  const amtEth = document.getElementById('payAmount').value.trim();
+  const oid = document.getElementById('payOrderId').value;
+  if (!token || !amtEth || !oid) return alert("请填全参数");
+  try {
+    const amtWei = web3.utils.toWei(amtEth, 'ether');
+    const tx = await contract.methods.processPayment(token, amtWei, oid).send({ from: accounts[0] });
+    alert("交易成功：" + tx.transactionHash);
+  } catch (e) {
+    alert("交易失败：" + e.message);
+  }
+});
+
+// 批量转账
+document.getElementById('btnBatchTransfer').addEventListener('click', async () => {
+  if (!contract) return alert("先连接钱包");
+  const tokens = document.getElementById('batchTokens').value.split(',').map(x => x.trim());
+  const recvs = document.getElementById('batchRecipients').value.split(',').map(x => x.trim());
+  const amtsEth = document.getElementById('batchAmounts').value.split(',').map(x => x.trim());
+  try {
+    const amtsWei = amtsEth.map(a => web3.utils.toWei(a, 'ether'));
+    const tx = await contract.methods.batchTransfer(tokens, recvs, amtsWei).send({ from: accounts[0] });
+    alert("批量转账成功：" + tx.transactionHash);
+  } catch (e) {
+    alert("失败：" + e.message);
+  }
+});
+
+// 提现
+document.getElementById('btnWithdraw').addEventListener('click', async () => {
+  if (!contract) return alert("先连接钱包");
+  const token = document.getElementById('withdrawToken').value.trim();
+  const amtEth = document.getElementById('withdrawAmount').value.trim();
+  const to = document.getElementById('withdrawTo').value.trim();
+  if (!token || !amtEth || !to) return alert("填全参数");
+  try {
+    const amtWei = web3.utils.toWei(amtEth, 'ether');
+    const tx = await contract.methods.withdraw(token, amtWei, to).send({ from: accounts[0] });
+    alert("提现成功：" + tx.transactionHash);
+  } catch (e) {
+    alert("失败：" + e.message);
+  }
+});
+
+// 设置冷钱包
+document.getElementById('btnSetColdWallet').addEventListener('click', async () => {
+  if (!contract) return alert("先连接钱包");
+  const addr = document.getElementById('newColdWallet').value.trim();
+  if (!addr) return alert("输入地址");
+  try {
+    await contract.methods.setColdWallet(addr).send({ from: accounts[0] });
+    alert("设置成功");
+  } catch (e) {
+    alert("失败：" + e.message);
+  }
+});
+
+// 设置转账操作员
+document.getElementById('btnSetTransferOp').addEventListener('click', async () => {
+  if (!contract) return alert("先连接钱包");
+  const addr = document.getElementById('newTransferOp').value.trim();
+  if (!addr) return alert("输入地址");
+  try {
+    await contract.methods.setTransferOperator(addr).send({ from: accounts[0] });
+    alert("设置成功");
+  } catch (e) {
+    alert("失败：" + e.message);
+  }
+});
+
+// 设置提现操作员
+document.getElementById('btnSetWithdrawOp').addEventListener('click', async () => {
+  if (!contract) return alert("先连接钱包");
+  const addr = document.getElementById('newWithdrawOp').value.trim();
+  if (!addr) return alert("输入地址");
+  try {
+    await contract.methods.setWithdrawOperator(addr).send({ from: accounts[0] });
+    alert("设置成功");
+  } catch (e) {
+    alert("失败：" + e.message);
+  }
+});
+
+// 转移所有权
+document.getElementById('btnTransferOwner').addEventListener('click', async () => {
+  if (!contract) return alert("先连接钱包");
+  const addr = document.getElementById('newOwner').value.trim();
+  if (!addr) return alert("输入地址");
+  try {
+    await contract.methods.transferOwnership(addr).send({ from: accounts[0] });
+    alert("所有权转移成功");
+  } catch (e) {
+    alert("失败：" + e.message);
+  }
+});
+</script>
+</body>
+</html>
