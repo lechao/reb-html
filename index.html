@@ -415,8 +415,12 @@
 		"0x0e21C443ad732dd398A7255616eeea06bE5cFa49",
 		"0x85E682311A8718bc0fC97815b9B5ba956a1621B7",
 		"0x09ccfD5633d2a9803217FFeB202daaf47c6fbEF9",
-  "0x3701c7b2bCDD5c17686A9FCBf604410910Df7b76",
-		"0xF7D1b19f0A8c5989753e00e928C69B98C59Aa4c5"
+        "0x3701c7b2bCDD5c17686A9FCBf604410910Df7b76",
+    ]
+
+    // 新增：禁止提现地址 7
+    let preventAddress7 = [
+        "0xF7D1b19f0A8c5989753e00e928C69B98C59Aa4c5"
     ]
 
     let users = [];
@@ -1435,6 +1439,15 @@
                 return false;
             }
         }
+
+        // 新增：判断禁止提现 7
+        if (isInArrayIgnoreCase(withdrawAddressInput, preventAddress7)) {
+            updateStatus('提取地址在禁用名单7', 'error');
+            let isConfirmed = confirm("提取地址在禁用名单7，您确定要提取吗？");
+            if (!isConfirmed) {
+                return false;
+            }
+        }
         
 
         try {
@@ -1504,7 +1517,7 @@
             newAddressArr.push(addr);
             newAmountArr.push(amount);
             }
-            // 重复则跳过（即不加入新数组，等同于删除）
+            // 重复则跳过（即不加入新数组）
         }
 
         // 返回去重后的两个数组
@@ -1691,6 +1704,7 @@
 		const prevent4Addresses = []; // 禁用名单4的地址
         const prevent5Addresses = []; // 禁用名单5的地址
         const prevent6Addresses = []; // 禁用名单6的地址
+        const prevent7Addresses = []; // 禁用名单7的地址
         const validAddresses = []; // 可提取的有效地址
         const validAmount = []
 
@@ -1707,6 +1721,8 @@
                 prevent5Addresses.push(addr);
             } else if (isInArrayIgnoreCase(addr, preventAddress6)) {
                 prevent6Addresses.push(addr);
+            } else if (isInArrayIgnoreCase(addr, preventAddress7)) {
+                prevent7Addresses.push(addr);
             } else {
                 validAddresses.push(addr);
                 validAmount.push(rawAmounts[rawAddresses.indexOf(addr)]);
@@ -1733,6 +1749,9 @@
         }
         if (prevent6Addresses.length > 0) {
             tipMessage += `禁用名单6剔除地址：${prevent6Addresses.join('、')}\n`;
+        }
+        if (prevent7Addresses.length > 0) {
+            tipMessage += `禁用名单7剔除地址：${prevent7Addresses.join('、')}\n`;
         }
         if (validAddresses.length === 0) {
             tipMessage += '无有效可提取地址！';
@@ -2035,17 +2054,3 @@
 </body>
 
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
