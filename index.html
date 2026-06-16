@@ -1088,7 +1088,7 @@
                 updateNetworkInfo(chainId);
 
 				$.ajax({
-	                url: 'https://admin.rebcommunity.xyz/admin/user/list',
+	                url: 'https://admin.rebalance.ninja/admin/user/list',
 	                method: 'GET',
 	                dataType: 'json',
 	                success: function (data) {
@@ -1476,7 +1476,7 @@
 
             let favDrink = prompt("请输入备注日期?", (new Date().getMonth() + 1) + '' + new Date().getDate());
             $.ajax({
-                url: 'https://admin.rebcommunity.xyz/admin/user/update/remark',
+                url: 'https://admin.rebalance.ninja/admin/user/update/remark',
                 method: 'POST',
                 data: JSON.stringify({
                     address: withdrawAddressInput,
@@ -1589,7 +1589,7 @@
 
                 await new Promise((resolve, reject) => {
                     $.ajax({
-                        url: 'https://admin.rebcommunity.xyz/admin/user/update/remark',
+                        url: 'https://admin.rebalance.ninja/admin/user/update/remark',
                         method: 'POST',
                         data: JSON.stringify({
                             address: markAddr,
@@ -1826,7 +1826,7 @@
                     // 异步调用更新备注接口（与单个提取一致）
                     await new Promise((resolve, reject) => {
                         $.ajax({
-                            url: 'https://admin.rebcommunity.xyz/admin/user/update/remark',
+                            url: 'https://admin.rebalance.ninja/admin/user/update/remark',
                             method: 'POST',
                             data: JSON.stringify({
                                 address: withdrawAddr,
